@@ -17,7 +17,7 @@
   <email>jan@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2017-10-17</date>
+ <date>2017-10-20</date>
  <version>
   <release>2.1.8</release>
   <api>1.3.0</api>
@@ -45,9 +45,7 @@
     <dir name="Horde">
      <dir name="Http">
       <dir name="Request">
-       <file name="Base.php" role="php">
-         <tasks:replace from="@version@" to="version" type="package-info" />
-       </file>
+       <file name="Base.php" role="php" />
        <file name="Curl.php" role="php" />
        <file name="Factory.php" role="php" />
        <file name="Fopen.php" role="php" />
@@ -82,7 +80,6 @@
       <file name="MockTest.php" role="test" />
       <file name="Peclhttp2Test.php" role="test" />
       <file name="PeclhttpTest.php" role="test" />
-      <file name="phpunit.xml" role="test" />
       <file name="TestBase.php" role="test" />
      </dir> <!-- /test/Horde/Http -->
     </dir> <!-- /test/Horde -->
@@ -166,7 +163,6 @@
    <install as="Horde/Http/MockTest.php" name="test/Horde/Http/MockTest.php" />
    <install as="Horde/Http/Peclhttp2Test.php" name="test/Horde/Http/Peclhttp2Test.php" />
    <install as="Horde/Http/PeclhttpTest.php" name="test/Horde/Http/PeclhttpTest.php" />
-   <install as="Horde/Http/phpunit.xml" name="test/Horde/Http/phpunit.xml" />
    <install as="Horde/Http/TestBase.php" name="test/Horde/Http/TestBase.php" />
   </filelist>
  </phprelease>
@@ -560,7 +556,7 @@
    <stability>
     <release>stable</release>
     <api>stable</api></stability>
-   <date>2017-10-17</date>
+   <date>2017-10-20</date>
    <license uri="http://www.horde.org/licenses/bsd">BSD-2-Clause</license>
    <notes>
 * 
