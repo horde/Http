@@ -1,5 +1,5 @@
 {
-    "name": "horde/horde-http",
+    "name": "horde/http",
     "description": "Horde HTTP libraries",
     "type": "library",
     "homepage": "https://pear.horde.org",
@@ -17,7 +17,7 @@
         }
     ],
     "version": "2.1.8",
-    "time": "2016-07-01",
+    "time": "2017-10-20",
     "repositories": [
         {
             "type": "pear",
@@ -26,12 +26,12 @@
     ],
     "require": {
         "php": "^5.3 || ^7",
-        "pear-pear.horde.org/Horde_Exception": "^2@stable",
-        "pear-pear.horde.org/Horde_Support": "^2@stable"
+        "pear-pear.horde.org/Horde_Exception": "^2",
+        "pear-pear.horde.org/Horde_Support": "^2"
     },
     "suggest": {
-        "pear-pear.horde.org/Horde_Test": "^2.1@stable",
-        "pear-pecl.php.net/pecl_http": "^1.7@stable <4",
+        "pear-pear.horde.org/Horde_Test": "^2.1",
+        "pear-pecl.php.net/pecl_http": "^1.7 <4",
         "ext-curl": "*"
     },
     "replace": {
