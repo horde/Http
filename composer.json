@@ -1,8 +1,8 @@
 {
     "name": "horde/http",
-    "description": "Horde HTTP libraries",
+    "description": "HTTP client library",
     "type": "library",
-    "homepage": "https://pear.horde.org",
+    "homepage": "https://www.horde.org/libraries/Horde_Http",
     "license": "BSD-2-Clause",
     "authors": [
         {
@@ -17,7 +17,7 @@
         }
     ],
     "version": "2.1.8",
-    "time": "2017-10-20",
+    "time": "2017-11-11",
     "repositories": [
         {
             "type": "pear",
@@ -31,7 +31,7 @@
     },
     "suggest": {
         "pear-pear.horde.org/Horde_Test": "^2.1",
-        "pear-pecl.php.net/pecl_http": "^1.7 <4",
+        "pear-pecl.php.net/pecl_http": "^1.7 || ^2 || ^3",
         "ext-curl": "*"
     },
     "replace": {
