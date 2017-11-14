@@ -84,7 +84,6 @@
       <file name="MockTest.php" role="test" />
       <file name="Peclhttp2Test.php" role="test" />
       <file name="PeclhttpTest.php" role="test" />
-      <file name="phpunit.xml" role="test" />
       <file name="TestBase.php" role="test" />
      </dir> <!-- /test/Horde/Http -->
     </dir> <!-- /test/Horde -->
@@ -168,7 +167,6 @@
    <install as="Horde/Http/MockTest.php" name="test/Horde/Http/MockTest.php" />
    <install as="Horde/Http/Peclhttp2Test.php" name="test/Horde/Http/Peclhttp2Test.php" />
    <install as="Horde/Http/PeclhttpTest.php" name="test/Horde/Http/PeclhttpTest.php" />
-   <install as="Horde/Http/phpunit.xml" name="test/Horde/Http/phpunit.xml" />
    <install as="Horde/Http/TestBase.php" name="test/Horde/Http/TestBase.php" />
   </filelist>
  </phprelease>
