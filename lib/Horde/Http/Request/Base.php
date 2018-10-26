@@ -94,6 +94,7 @@ abstract class Horde_Http_Request_Base
     /**
      * Send this HTTP request
      *
+     * @throws Horde_Http_Exception
      * @return Horde_Http_Response_Base
      */
     abstract public function send();
