@@ -38,9 +38,6 @@
     "autoload": {
         "psr-0": {
             "Horde_Http": "lib/"
-        },
-        "psr-4": {
-            "Horde\\Http\\": "src/"
         }
     }
 }
