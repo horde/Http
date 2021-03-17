@@ -8,7 +8,6 @@
  * @license    http://www.horde.org/licenses/bsd
  */
 namespace Horde\Http;
-use Horde_Http_TestBase as TestBase;
 
 /**
  * Unit tests for version 1.x of the PECL http extension.

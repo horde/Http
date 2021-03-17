@@ -7,6 +7,9 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
+namespace Horde\Http;
+use Horde_Test_Case;
+use \Horde_Http_Client;
 
 /**
  * Unit test base.
@@ -16,7 +19,7 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
-class Horde_Http_TestBase extends Horde_Test_Case
+class TestBase extends Horde_Test_Case
 {
     protected $_server;
 

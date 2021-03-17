@@ -8,7 +8,7 @@
  * @license    http://www.horde.org/licenses/bsd
  */
 namespace Horde\Http;
-use Horde_Http_TestBase as TestBase;
+use \Horde_Http_Client;
 
 /**
  * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
