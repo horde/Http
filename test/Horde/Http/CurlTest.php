@@ -7,6 +7,8 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
+namespace Horde\Http;
+use Horde_Http_TestBase as TestBase;
 
 /**
  * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
@@ -16,9 +18,9 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
-class Horde_Http_CurlTest extends Horde_Http_TestBase
+class CurlTest extends TestBase
 {
-    public function setUp()
+    public function setUp(): void
     {
         if (!function_exists('curl_exec')) {
             $this->markTestSkipped('Missing PHP extension "curl"!');

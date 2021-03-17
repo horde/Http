@@ -11,6 +11,12 @@
  * @license    http://www.horde.org/licenses/bsd
  * @link       http://www.horde.org/libraries/Horde_Http
  */
+namespace Horde\Http;
+use PHPUnit\Framework\TestCase;
+use \Horde_Support_StringStream;
+use \Horde_Http_Request_Mock;
+use \Horde_Http_Client;
+use \Horde_Http_Response_Mock;
 
 /**
  * Test the remote server handler.
@@ -24,7 +30,7 @@
  * @license    http://www.horde.org/licenses/bsd
  * @link       http://www.horde.org/libraries/Horde_Http
  */
-class Horde_Http_MockTest extends PHPUnit_Framework_TestCase
+class MockTest extends TestCase
 {
     public function testNoResponses()
     {

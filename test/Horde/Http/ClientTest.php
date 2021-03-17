@@ -7,6 +7,10 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
+namespace Horde\Http;
+use Horde_Test_Case;
+use \Horde_Http_Request_Mock;
+use \Horde_Http_Client;
 
 /**
  * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
@@ -16,7 +20,7 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
-class Horde_Http_ClientTest extends Horde_Test_Case
+class ClientTest extends Horde_Test_Case
 {
     public function testGetTimeout()
     {
@@ -39,6 +43,7 @@ class Horde_Http_ClientTest extends Horde_Test_Case
      */
     public function testSetUnknownOption()
     {
+        $this->expectException('Horde_Http_Exception');
         $request = new Horde_Http_Request_Mock();
         $client = new Horde_Http_Client(
             array('request' => $request)

@@ -7,6 +7,8 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
+namespace Horde\Http;
+use Horde_Http_TestBase as TestBase;
 
 /**
  * Unit tests for version 1.x of the PECL http extension.
@@ -16,9 +18,9 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
-class Horde_Http_PeclhttpTest extends Horde_Http_TestBase
+class PeclhttpTest extends TestBase
 {
-    public function setUp()
+    public function setUp(): void
     {
         if (!class_exists('HttpRequest', false)) {
             $this->markTestSkipped('Missing PHP extension "http" or wrong version!');

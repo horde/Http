@@ -22,13 +22,13 @@ class Horde_Http_TestBase extends Horde_Test_Case
 
     protected static $_requestClass;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         preg_match('/Horde_Http_(.*)Test/', get_called_class(), $match);
         self::$_requestClass = 'Horde_Http_Request_' . $match[1];
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         $config = self::getConfig('HTTP_TEST_CONFIG');
         if ($config && !empty($config['http']['server'])) {
