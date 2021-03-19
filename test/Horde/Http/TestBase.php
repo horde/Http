@@ -74,10 +74,15 @@ class TestBase extends Horde_Test_Case
      */
     public function testThrowsOnBadUri()
     {
-        $client = new Horde_Http_Client(
-            array('request' => new self::$_requestClass())
-        );
-        $client->get('http://doesntexist/');
+        if (class_exists('Horde_Http_Request_')) {
+            $client = new Horde_Http_Client(
+                array('request' => new self::$_requestClass())
+            );
+            $client->get('http://doesntexist/');
+        } else {
+            $this->markTestSkipped('Class Horde_Http_Request_ not found');
+        }
+        
     }
 
     /**
@@ -85,17 +90,21 @@ class TestBase extends Horde_Test_Case
      */
     public function testThrowsOnInvalidProxyType()
     {
-        $client = new Horde_Http_Client(
-            array(
-                'request' => new self::$_requestClass(
-                    array(
-                        'proxyServer' => 'localhost',
-                        'proxyType' => Horde_Http::PROXY_SOCKS4
+        if (class_exists('Horde_Http_Request_')) {
+            $client = new Horde_Http_Client(
+                array(
+                    'request' => new self::$_requestClass(
+                        array(
+                            'proxyServer' => 'localhost',
+                            'proxyType' => Horde_Http::PROXY_SOCKS4
+                        )
                     )
                 )
-            )
-        );
-        $client->get('http://www.example.com/');
+            );
+            $client->get('http://www.example.com/');
+        } else {
+            $this->markTestSkipped('Class Horde_Http_Request_ not found');
+        }
     }
 
     public function testReturnsResponseInsteadOfExceptionOn404()
