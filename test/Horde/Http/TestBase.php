@@ -10,6 +10,8 @@
 namespace Horde\Http;
 use Horde_Test_Case;
 use \Horde_Http_Client;
+use \Horde_Http_Exception;
+use \Horde_Http;
 
 /**
  * Unit test base.
@@ -27,8 +29,9 @@ class TestBase extends Horde_Test_Case
 
     public static function setUpBeforeClass(): void
     {
-        preg_match('/Horde_Http_(.*)Test/', get_called_class(), $match);
-        self::$_requestClass = 'Horde_Http_Request_' . $match[1];
+        $parts = explode('\\', get_called_class());
+        $match = substr($parts[array_key_last($parts)], 0, -4);
+        self::$_requestClass = 'Horde_Http_Request_' . $match;
     }
 
     public function setUp(): void
@@ -37,11 +40,13 @@ class TestBase extends Horde_Test_Case
         if ($config && !empty($config['http']['server'])) {
             $this->_server = $config['http']['server'];
         }
+        if (empty($this->_server)) {
+            $this->_server = 'horde.org';
+        }
     }
 
     public function testRequest()
     {
-        $this->_skipMissingConfig();
         $client = new Horde_Http_Client(
             array('request' => new self::$_requestClass())
         );
@@ -50,10 +55,10 @@ class TestBase extends Horde_Test_Case
         $this->assertStringStartsWith('http', $response->uri);
         $this->assertStringStartsWith('1.', $response->httpVersion);
         $this->assertEquals(200, $response->code);
-        $this->assertInternalType('array', $response->headers);
-        $this->assertInternalType('string', $response->getBody());
+        $this->assertIsArray($response->headers);
+        $this->assertIsString($response->getBody());
         $this->assertGreaterThan(0, strlen($response->getBody()));
-        $this->assertInternalType('resource', $response->getStream());
+        $this->assertIsResource($response->getStream());
         $this->assertStringMatchesFormat(
             '%s/%s',
             $response->getHeader('Content-Type')
@@ -69,20 +74,13 @@ class TestBase extends Horde_Test_Case
         );
     }
 
-    /**
-     * @expectedException Horde_Http_Exception
-     */
     public function testThrowsOnBadUri()
     {
-        if (class_exists('Horde_Http_Request_')) {
-            $client = new Horde_Http_Client(
-                array('request' => new self::$_requestClass())
-            );
-            $client->get('http://doesntexist/');
-        } else {
-            $this->markTestSkipped('Class Horde_Http_Request_ not found');
-        }
-        
+        $client = new Horde_Http_Client([
+            'request' => new self::$_requestClass()
+        ]);
+        $this->expectException(Horde_Http_Exception::class);
+        $client->get('http://doesntexist/');
     }
 
     /**
@@ -90,21 +88,18 @@ class TestBase extends Horde_Test_Case
      */
     public function testThrowsOnInvalidProxyType()
     {
-        if (class_exists('Horde_Http_Request_')) {
-            $client = new Horde_Http_Client(
-                array(
-                    'request' => new self::$_requestClass(
-                        array(
-                            'proxyServer' => 'localhost',
-                            'proxyType' => Horde_Http::PROXY_SOCKS4
-                        )
+        $client = new Horde_Http_Client(
+            array(
+                'request' => new self::$_requestClass(
+                    array(
+                        'proxyServer' => 'localhost',
+                        'proxyType' => Horde_Http::PROXY_SOCKS4
                     )
                 )
-            );
-            $client->get('http://www.example.com/');
-        } else {
-            $this->markTestSkipped('Class Horde_Http_Request_ not found');
-        }
+            )
+        );
+        $this->expectException(Horde_Http_Exception::class);
+        $client->get('http://www.example.com/');
     }
 
     public function testReturnsResponseInsteadOfExceptionOn404()

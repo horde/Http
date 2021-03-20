@@ -22,7 +22,7 @@ class CurlTest extends TestBase
 {
     public function setUp(): void
     {
-        if (!function_exists('curl_exec')) {
+        if (!function_exists('\curl_exec')) {
             $this->markTestSkipped('Missing PHP extension "curl"!');
         }
         parent::setUp();
