@@ -34,6 +34,9 @@ dependencies:
     composer:
       horde/exception: ^3
       horde/support: ^3
+      psr/http-message: ^1
+      psr/http-factory: ^1
+      psr/http-client: ^1
   optional:
     composer:
       horde/test: ^3
