@@ -43,7 +43,7 @@ class Curl implements ClientInterface
      *
      * @var array
      */
-    private const httpAuthSchemes = [
+    private const HTTP_AUTH_SCHEMES = [
         Constants::AUTH_ANY => CURLAUTH_ANY,
         Constants::AUTH_BASIC => CURLAUTH_BASIC,
         Constants::AUTH_DIGEST => CURLAUTH_DIGEST,
@@ -184,10 +184,10 @@ class Curl implements ClientInterface
      */
     protected function httpAuthScheme($httpAuthScheme)
     {
-        if (!isset($this->httpAuthSchemes[$httpAuthScheme])) {
+        if (!isset(self::HTTP_AUTH_SCHEMES[$httpAuthScheme])) {
             throw new ClientException('Unsupported authentication scheme (' . $httpAuthScheme . ')');
         }
-        return $this->httpAuthSchemes[$httpAuthScheme];
+        return self::HTTP_AUTH_SCHEMES[$httpAuthScheme];
     }
 
 
