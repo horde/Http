@@ -26,8 +26,12 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 /**
- * HTTP client for the pecl_http 1.0 extension 
+ * HTTP client for the pecl_http extension 
  * 
+ * Driver is suitable for PeclHttp 3.x (PHP7) and 4.x (PHP 8) extension versions
+ * 
+ * PeclHttp used to be the name for the 1.x backend but this is no longer supported
+ *
  * Ported from the original Request/Response implementation
  */
 class PeclHttp
