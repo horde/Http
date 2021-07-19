@@ -69,8 +69,8 @@ class Uri implements UriInterface
         // Fill the privates
         $this->scheme = isset($parts['scheme']) ? Horde_String::lower($parts['scheme']) : '';
         $this->userInfo = $parts['user'] ?? '';
-        $this->host = isset($parts['host']) ?? Horde_String::lower($parts['host']);
-        $this->port = isset($parts['port']) ?? null;
+        $this->host = $parts['host'] ?? Horde_String::lower($parts['host']);
+        $this->port = empty($parts['port']) ? null :  (int) $parts['port'];
         $this->path = $parts['path'] ?? '';
         $this->query = $parts['query'] ?? '';
         $this->fragment = $parts['fragment'] ?? '';
@@ -361,7 +361,7 @@ class Uri implements UriInterface
     public function withPort($port): self
     {
         $ret = clone $this;
-        $ret->port = $port;
+        $ret->port = (int) $port;
 
         return $ret;
     }
