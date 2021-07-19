@@ -4,11 +4,11 @@ namespace Horde\Http;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 use Throwable;
-use resource;
 use feof;
 use fclose;
 use ftell;
 use fwrite;
+use InvalidArgumentException;
 
 /**
  * A PSR-7 compliant Stream implementation.
@@ -21,7 +21,12 @@ use fwrite;
  */
 class Stream implements StreamInterface
 {
-    protected ?resource $stream;
+    /**
+     * Cannot type for resource in php 7.x so keep this annotation
+     * 
+     * @var resource $stream
+     */
+    protected $stream;
     protected bool $seekable;
     protected bool $readable;
     protected bool $writable;
@@ -29,8 +34,12 @@ class Stream implements StreamInterface
     /**
      * Stream constructor
      */
-    public function __construct(resource $stream)
+    public function __construct($stream)
     {
+        // Cannot typehint for resource
+        if (!is_resource($stream)) {
+            throw new InvalidArgumentException('First argument to Stream constuctor must be a resource');
+        }
         $this->stream = $stream;
         $meta = stream_get_meta_data($this->stream);
         $this->seekable = $meta['seekable'];
