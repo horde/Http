@@ -11,39 +11,39 @@ use Psr\Http\Message\ResponseInterface;
 class Response implements ResponseInterface
 {
     use MessageImplementation;
- 
+
     /**
      * The HTTP Reason Phrase. May be a standard from lookup table or freeform.
-     * 
+     *
      * @var string
      */
     private $httpReasonPhrase;
 
     /**
      * The HTTP Status Code.
-     * 
-     * @var int 
+     *
+     * @var int
      */
     private $httpStatusCode;
 
 
     /**
-     * 
+     *
      * Constructor
-     * 
-     * 
+     *
+     *
      */
     public function __construct(int $status = 200, iterable $headers = [], $body = null, string $version = '1.1', string $reason = null)
     {
         $this->httpStatusCode = $status;
         $this->httpReasonPhrase = $reason;
 
-        foreach ($headers as $header => $value) 
+        foreach ($headers as $header => $value)
         {
             $this->storeHeader($header, $value);
         }
         $this->body = $body;
-        $this->protocolVersion = $version;   
+        $this->protocolVersion = $version;
     }
 
     /**
