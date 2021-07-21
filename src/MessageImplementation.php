@@ -128,7 +128,7 @@ trait MessageImplementation
     public function getHeader($name)
     {
         $lcHeader = Horde_String::lower($name);
-        if (empty($origHeader = $this->headerNames($lcHeader))) {
+        if (empty($origHeader = $this->headerNames[$lcHeader])) {
             return [];
         }
         return $this->headers[$origHeader];
