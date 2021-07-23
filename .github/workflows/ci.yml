@@ -28,7 +28,7 @@ jobs:
       matrix:
         operating-system: ['ubuntu-20.04']
         php-versions: ['7.4']
-        phpunit-versions: ['latest', '9.5', '9.0']
+        phpunit-versions: ['latest', '9.5']
     steps:
     - name: Setup github ssh key
       run:  mkdir -p ~/.ssh/ && ssh-keyscan -t rsa github.com > ~/.ssh/known_hosts
@@ -47,6 +47,7 @@ jobs:
       run: composer config -g github-oauth.github.com ${{ secrets.GITHUB_TOKEN }}
     - name: Install horde/test dependency and other dependencies
       run: |
+        COMPOSER_ROOT_VERSION=dev-FRAMEWORK_6_0 composer config minimum-stability dev
         COMPOSER_ROOT_VERSION=dev-FRAMEWORK_6_0 composer install
         COMPOSER_ROOT_VERSION=dev-FRAMEWORK_6_0 composer require --dev horde/test dev-FRAMEWORK_6_0
     - name: Redo install due to many fails
@@ -54,4 +55,4 @@ jobs:
         COMPOSER_ROOT_VERSION=dev-FRAMEWORK_6_0 composer install
         COMPOSER_ROOT_VERSION=dev-FRAMEWORK_6_0 composer require --dev horde/test dev-FRAMEWORK_6_0
     - name: run phpunit
-      run: phpunit --bootstrap test/Horde/Http/bootstrap.php test/Horde/Http
+      run: phpunit --bootstrap test/bootstrap.php

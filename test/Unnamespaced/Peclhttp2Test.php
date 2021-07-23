@@ -7,7 +7,7 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
-namespace Horde\Http;
+namespace Horde\Http\Test\Unnamespaced;
 
 /**
  * Unit tests for version 1.x of the PECL http extension.

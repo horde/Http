@@ -16,7 +16,7 @@
             "role": "lead"
         }
     ],
-    "time": "2021-07-16",
+    "time": "2021-08-05",
     "repositories": [
         {
             "type": "composer",
@@ -24,7 +24,7 @@
         }
     ],
     "require": {
-        "php": "^7",
+        "php": "^7 || ^8",
         "horde/exception": "^3 || dev-FRAMEWORK_6_0",
         "horde/support": "^3 || dev-FRAMEWORK_6_0",
         "psr/http-message": "^1",
@@ -43,6 +43,11 @@
         },
         "psr-4": {
             "Horde\\Http\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Horde\\Http\\Test\\": "test/"
         }
     }
 }
