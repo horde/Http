@@ -11,7 +11,7 @@
  * @license    http://www.horde.org/licenses/bsd
  * @link       http://www.horde.org/libraries/Horde_Http
  */
-namespace Horde\Http;
+namespace Horde\Http\Test\Unnamespaced;
 use PHPUnit\Framework\TestCase;
 use \Horde_Support_StringStream;
 use \Horde_Http_Request_Mock;
