@@ -108,7 +108,7 @@ class ServerRequestTest extends TestCase
 
     }
 
-    public function testgetHeaderInitialHeaderValues()
+    public function testGetHeaderInitialHeaderValues()
     {
         $headers = [
             'TestHeader1' => 'val1',
