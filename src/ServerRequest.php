@@ -52,8 +52,7 @@ class ServerRequest implements ServerRequestInterface
 
         $this->protocolVersion = $version;
 
-        if ($body instanceof RequestInterface) {
-            // TODO: is this correct? Shouldn't the body always be a Stream?
+        if ($body instanceof StreamInterface) {
             $this->stream = $body;
         } elseif (is_string($body) && $body) {
             $factory = new StreamFactory();
