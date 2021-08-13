@@ -19,9 +19,11 @@ class ServerRequest implements ServerRequestInterface
     use MessageImplementation;
     use RequestImplementation;
 
-    private array $cookieParams;
+    private array $cookieParams = [];
+    private array $attributes = [];
+    private array $queryParams = [];
     private iterable $serverParams;
-    private array $uploadedFiles;
+    private array $uploadedFiles = [];
     // TODO: PHP 8: Union type!
     private $parsedBody;
 
@@ -50,7 +52,7 @@ class ServerRequest implements ServerRequestInterface
 
         $this->protocolVersion = $version;
 
-        if ($body instanceof RequestInterface) {
+        if ($body instanceof StreamInterface) {
             $this->stream = $body;
         } elseif (is_string($body) && $body) {
             $factory = new StreamFactory();
@@ -58,6 +60,8 @@ class ServerRequest implements ServerRequestInterface
         }
         // If body is null or empty string, it will create an empty stream on access   
         $this->serverParams = $serverParams;
+
+        // TODO: parse queryParams from uri
     }
 
     /**

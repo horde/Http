@@ -108,7 +108,7 @@ trait MessageImplementation
      */
     public function hasHeader($name)
     {
-        return !empty($this->headerNames[Horde_String::lower($name)]);
+        return !empty($this->getHeaderName($name));
     }
 
     /**
@@ -127,11 +127,51 @@ trait MessageImplementation
      */
     public function getHeader($name)
     {
-        $lcHeader = Horde_String::lower($name);
-        if (empty($origHeader = $this->headerNames[$lcHeader])) {
+        $origHeader = $this->getHeaderName($name);
+        if (empty($origHeader)) {
             return [];
         }
         return $this->headers[$origHeader];
+    }
+
+
+    /**
+     * Retrieves the header name in the originally set case by the given case-insensitive name.
+     *
+     * If the header name could not be found, this returns null.
+     *
+     * @param string    $name Case-insensitive header field name.
+     *
+     * @return ?string  The header name in the originally set case.
+     */
+    private function getHeaderName(string $name): ?string
+    {
+        $lcHeader = Horde_String::lower($name);
+        $origHeader = $this->headerNames[$lcHeader] ?? null;
+        return $origHeader;
+    }
+
+    /**
+     * Sets the header name in its given case,
+     * so it can be retrieved later by a case-insensitive version of it.
+     *
+     * @param string $name  Header field name.
+     */
+    private function setHeaderName(string $name)
+    {
+        $lcHeader = Horde_String::lower($name);
+        $this->headerNames[$lcHeader] = $name;
+    }
+
+    /**
+     * Unsets the header name in by the given case-insensitive name.
+     *
+     * @param string $name  Case-insensitive header field name.
+     */
+    private function unsetHeaderName(string $name)
+    {
+        $lcHeader = Horde_String::lower($name);
+        unset($this->headerNames[$lcHeader]);
     }
 
     /**
@@ -194,14 +234,12 @@ trait MessageImplementation
         if (!is_array($value)) {
             $value = [$value];
         }
-        $lcHeader = Horde_String::lower($name);
         // Avoid glitches, delete and create header instead of writing into it
         if ($this->hasHeader($name)) {
-            unset($this->headers[$this->headerNames[$lcHeader]]);
+            unset($this->headers[$this->getHeaderName($name)]);
         }
-        $this->headerNames[$lcHeader] = $name;
+        $this->setHeaderName($name);
         $this->headers[$name] = $value;
-        return $this;
     }
 
     /**
@@ -230,10 +268,10 @@ trait MessageImplementation
             return $this->withHeader($name, $value);
         }        
         $ret = clone($this);
-        $lcHeader = Horde_String::lower($name);
+        $headerName = $ret->getHeaderName($name);
         // TODO: What if we have two distinct uc/lc forms of the same header?
-        $ret->headers[$this->headerNames[$lcHeader]] = array_merge(
-            $ret->headers[$this->headerNames[$lcHeader]],
+        $ret->headers[$headerName] = array_merge(
+            $ret->headers[$headerName],
             $value
         );
         return $ret;
@@ -253,10 +291,10 @@ trait MessageImplementation
      */
     public function withoutHeader($name)
     {
-        $lcHeader = Horde_String::lower($name);
         $ret = clone($this);
-        unset($ret->headers[$ret->headerNames[$lcHeader]]);
-        unset($ret->headerNames[$lcHeader]);
+        $headerName = $ret->getHeaderName($name);
+        unset($ret->headers[$headerName]);
+        $ret->unsetHeaderName($name);
         return $ret;
     }
 
