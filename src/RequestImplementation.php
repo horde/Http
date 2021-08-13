@@ -68,8 +68,12 @@ trait RequestImplementation
      */
     public function withRequestTarget($requestTarget)
     {
-        list($path, $query) = explode('?', $requestTarget, 1);
-        $uri = $this->uri->withPath($path)->withQuery($query);
+        $pathAndQuery = explode('?', $requestTarget, 2);
+        $path = $pathAndQuery[0];
+        $uri = $this->uri->withPath($path);
+        if (count($pathAndQuery) === 2) {
+            $uri = $uri->withQuery($pathAndQuery[1]);
+        }
         return $this->withUri($uri);
     }
 
