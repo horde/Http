@@ -32,9 +32,10 @@
         "psr/http-factory": "^1",
         "psr/http-client": "^1"
     },
-    "require-dev": {},
+    "require-dev": {
+        "horde/test": "dev-FRAMEWORK_6_0"
+    },
     "suggest": {
-        "horde/test": "^3 || dev-FRAMEWORK_6_0",
         "ext-curl": "*",
         "ext-http": "*"
     },
