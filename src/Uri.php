@@ -392,7 +392,9 @@ class Uri implements UriInterface
     public function withPath($path): self
     {
         $ret = clone $this;
-        $path = strtok($path, '?');
+        // remove potential query strings or hashes
+        $path = strtok($path, '?#');
+        if ($path === false) $path = "";
         $ret->path = $path;
 
         return $ret;
