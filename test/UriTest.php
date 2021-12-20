@@ -1,5 +1,7 @@
 <?php
+
 namespace Horde\Http\Test;
+
 use Phpunit\Framework\TestCase;
 use Horde\Http\RequestFactory;
 use Horde\Http\ServerRequest;
@@ -15,7 +17,7 @@ class UriTest extends TestCase
 {
     public function setUp(): void
     {
-        $this->requestFactory = new RequestFactory;
+        $this->requestFactory = new RequestFactory();
     }
 
     public function testWithPathRemovesQueryString()
@@ -42,5 +44,12 @@ class UriTest extends TestCase
         $uri = new Uri();
         $uri = $uri->withPath($path . $hash);
         $this->assertEquals($uri->getPath(), $path);
+    }
+
+    public function testToString()
+    {
+        $url = 'http://www.testsite.com/testpath?q=test#hashtest';
+        $uri = new Uri($url);
+        $this->assertEquals($url, (string) $uri);
     }
 }

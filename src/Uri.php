@@ -1,13 +1,17 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Horde\Http;
-use \Horde_String;
+
+use Horde_String;
 use Psr\Http\Message\UriInterface;
+
 /**
- * Uri implementation from PSR-7. 
+ * Uri implementation from PSR-7.
  * This has some overlap with Horde_Url but does not have all the features of Horde_Url.
  * Maybe it makes sense to have Horde_Url implement the same interface on its own. I would like to avoid a hard dependency here.
- * 
+ *
  * Value object representing a URI.
  *
  * This interface is meant to represent URIs according to RFC 3986 and to
@@ -52,7 +56,7 @@ class Uri implements UriInterface
 
     /**
      * Construct an URI from a string
-     * 
+     *
      * @param string $uri The string representation of the URI
      * @throws InvalidArgumentException
      */
@@ -70,7 +74,7 @@ class Uri implements UriInterface
         $this->scheme = isset($parts['scheme']) ? Horde_String::lower($parts['scheme']) : '';
         $this->userInfo = $parts['user'] ?? '';
         $this->host = empty($parts['host']) ? '' : Horde_String::lower($parts['host']);
-        $this->port = empty($parts['port']) ? null :  (int) $parts['port'];
+        $this->port = empty($parts['port']) ? null : (int) $parts['port'];
         $this->path = $parts['path'] ?? '';
         $this->query = $parts['query'] ?? '';
         $this->fragment = $parts['fragment'] ?? '';
@@ -119,10 +123,10 @@ class Uri implements UriInterface
      */
     public function getAuthority(): string
     {
-        if (empty($host)) {
+        if (empty($this->host)) {
             return '';
         }
- 
+
         $authority = $this->host;
         if (!empty($this->userInfo)) {
             $authority = $this->userInfo . '@' . $authority;
@@ -311,7 +315,7 @@ class Uri implements UriInterface
     public function withUserInfo($user, $password = null): self
     {
         $info = $user;
-        if (!empty($password)){
+        if (!empty($password)) {
             $info .= ':' . $password;
         }
 
@@ -474,18 +478,18 @@ class Uri implements UriInterface
         if ($this->scheme) {
             $uri .= $this->scheme . ':';
         }
-        if ($this->authority) {
-            $uri .= '//' . $this->authority;
+        $authority = $this->getAuthority();
+        if ($authority) {
+            $uri .= '//' . $authority;
         }
 
         // $this->path should be treated as immutable so copy it first
         $path = $this->path;
         if ($path) {
-            if ($this->authority && $path[0] != '/') {
+            if ($authority && $path[0] != '/') {
                 $path = '/' . $path;
-
             }
-            if (empty($this->authority) && substr($path, 0, 2) == '//') {
+            if (empty($authority) && substr($path, 0, 2) == '//') {
                 $path = '/' . \ltrim($path, '/');
             }
             $uri .= $path;
@@ -505,10 +509,10 @@ class Uri implements UriInterface
 
     /**
      * Helper: If protocol and port match, make port empty
-     * 
+     *
      * @param string $schema
      * @param int|null $port
-     * 
+     *
      * @return string
      */
     private function nullStandardPorts(string $schema, ?int $port): ?int
