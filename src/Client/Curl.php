@@ -1,18 +1,22 @@
 <?php
+
 /**
  * Copyright 2007-2021 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
- * 
+ *
  * @author   Chuck Hagenbuch <chuck@horde.org>
  * @author   Ralf Lang <lang@b1-systems.de>
  * @category Horde
  * @license  http://www.horde.org/licenses/bsd BSD
  * @package  Http
  */
+
 declare(strict_types=1);
+
 namespace Horde\Http\Client;
+
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -26,14 +30,16 @@ use Horde\Http\NetworkException;
 use Horde\Http\Response;
 use Horde\Http\ResponseFactory;
 use Horde\Http\StreamFactory;
-use \Horde_Support_CaseInsensitiveArray;
+use Horde_Support_CaseInsensitiveArray;
+
 /**
  * HTTP client for the curl backend.
- * 
+ *
  * Adapted from the original Request/Response implementation.
  */
 class Curl implements ClientInterface
 {
+    use ParseHeadersTrait;
     private ResponseFactoryInterface $responseFactory;
     private StreamFactoryInterface $streamFactory;
     private Options $options;
@@ -50,8 +56,6 @@ class Curl implements ClientInterface
         Constants::AUTH_GSSNEGOTIATE => CURLAUTH_GSSNEGOTIATE,
         Constants::AUTH_NTLM => CURLAUTH_NTLM,
     ];
-
-    use ParseHeadersTrait;
 
     public function __construct(ResponseFactoryInterface $responseFactory, StreamFactoryInterface $streamFactory, Options $options)
     {
@@ -133,10 +137,16 @@ class Curl implements ClientInterface
         }
         $headerLines = [];
         foreach (array_keys($headers) as $headerKey) {
-            $headerLines[] = $request->getHeaderLine($headerKey);
+            $headerLines[] = $headerKey . ': ' . $request->getHeaderLine($headerKey);
         }
 
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headerLines);
+
+        $body = $request->getBody();
+        if ($body) {
+            $bodyStr =  (string) $body;
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $bodyStr);
+        }
 
         $result = curl_exec($curl);
         if ($result === false) {
@@ -189,6 +199,4 @@ class Curl implements ClientInterface
         }
         return self::HTTP_AUTH_SCHEMES[$httpAuthScheme];
     }
-
-
 }
