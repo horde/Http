@@ -1,16 +1,4 @@
 <?php
-/**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
- *
- * @category   Horde
- * @package    Http
- * @subpackage UnitTests
- * @license    http://www.horde.org/licenses/bsd
- */
-namespace Horde\Http\Test\Unnamespaced;
-use Horde_Test_Case;
-use \Horde_Http_Request_Mock;
-use \Horde_Http_Client;
 
 /**
  * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
@@ -20,7 +8,22 @@ use \Horde_Http_Client;
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
-class ClientTest extends Horde_Test_Case
+
+namespace Horde\Http\Test\Unnamespaced;
+
+use Horde\Test\TestCase;
+use Horde_Http_Request_Mock;
+use Horde_Http_Client;
+
+/**
+ * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ *
+ * @category   Horde
+ * @package    Http
+ * @subpackage UnitTests
+ * @license    http://www.horde.org/licenses/bsd
+ */
+class ClientTest extends TestCase
 {
     public function testGetTimeout()
     {
