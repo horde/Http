@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2007-2021 Horde LLC (http://www.horde.org/)
  *
@@ -11,8 +12,11 @@
  * @license  http://www.horde.org/licenses/bsd BSD
  * @package  Http
  */
+
 declare(strict_types=1);
+
 namespace Horde\Http\Client;
+
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -27,17 +31,16 @@ use Horde\Http\Constants;
 
 /**
  * Fopen implementation of the Horde HTTP Client
- * 
+ *
  * Ported from the original Request and Response designs by Chuck Hagenbuch
  */
 class Fopen implements ClientInterface
 {
+    use ParseHeadersTrait;
     private ResponseFactoryInterface $responseFactory;
     private StreamFactoryInterface $streamFactory;
     private Options $options;
     private array $errors = [];
-
-    use ParseHeadersTrait;
 
     public function __construct(ResponseFactoryInterface $responseFactory, StreamFactoryInterface $streamFactory, Options $options)
     {
@@ -48,13 +51,12 @@ class Fopen implements ClientInterface
         if (!ini_get('allow_url_fopen')) {
             throw new ClientException('allow_url_fopen must be enabled');
         }
-
     }
 
     public function sendRequest(RequestInterface $request): ResponseInterface
     {
         $method = $request->getMethod();
-        $uri = (string)$request->getUri();
+        $uri = (string) $request->getUri();
         $headers = $request->getHeaders();
         $data = $request->getBody();
 
@@ -86,13 +88,13 @@ class Fopen implements ClientInterface
         // Authentication settings
         if ($username) {
             switch ($authenticationScheme) {
-            case Constants::AUTH_BASIC:
-            case Constants::AUTH_ANY:
-                $headers['Authorization'] = 'Basic ' . base64_encode($username . ':' . $password);
-                break;
+                case Constants::AUTH_BASIC:
+                case Constants::AUTH_ANY:
+                    $headers['Authorization'] = 'Basic ' . base64_encode($username . ':' . $password);
+                    break;
 
-            default:
-                throw new ClientException('Unsupported authentication scheme (' . $authenticationScheme . ')');
+                default:
+                    throw new ClientException('Unsupported authentication scheme (' . $authenticationScheme . ')');
             }
         }
 
@@ -110,7 +112,7 @@ class Fopen implements ClientInterface
         // Stream context config.
         $opts['http']['method'] = $method;
         $opts['http']['header'] = implode("\n", $hdr);
-        $opts['http']['content'] = $data;
+        $opts['http']['content'] = (string) $data;
         $opts['http']['timeout'] = $this->options->getOption('timeout');
         $opts['http']['max_redirects'] = $this->options->getOption('redirects');
         $opts['http']['ignore_errors'] = true;
@@ -124,8 +126,10 @@ class Fopen implements ClientInterface
         $streamResource = fopen($uri, 'rb', false, $context);
         restore_error_handler();
         if (!$streamResource) {
-            if (isset($this->errors[0]['message']) &&
-                preg_match('/HTTP\/(\d+\.\d+) (\d{3}) (.*)$/', $this->errors[0]['message'], $matches)) {
+            if (
+                isset($this->errors[0]['message']) &&
+                preg_match('/HTTP\/(\d+\.\d+) (\d{3}) (.*)$/', $this->errors[0]['message'], $matches)
+            ) {
                 // Create a Response for the HTTP error code
                 return new $this->responseFactory->createResponse($matches[0]);
             } else {
