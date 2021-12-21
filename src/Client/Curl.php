@@ -30,7 +30,6 @@ use Horde\Http\NetworkException;
 use Horde\Http\Response;
 use Horde\Http\ResponseFactory;
 use Horde\Http\StreamFactory;
-use Horde_Support_CaseInsensitiveArray;
 
 /**
  * HTTP client for the curl backend.

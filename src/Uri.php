@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Horde\Http;
 
-use Horde_String;
+use Horde\Util\HordeString;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -71,9 +71,9 @@ class Uri implements UriInterface
             throw new \InvalidArgumentException(\sprintf('Unable to parse URI: "%s"', $uri));
         }
         // Fill the privates
-        $this->scheme = isset($parts['scheme']) ? Horde_String::lower($parts['scheme']) : '';
+        $this->scheme = isset($parts['scheme']) ? HordeString::lower($parts['scheme']) : '';
         $this->userInfo = $parts['user'] ?? '';
-        $this->host = empty($parts['host']) ? '' : Horde_String::lower($parts['host']);
+        $this->host = empty($parts['host']) ? '' : HordeString::lower($parts['host']);
         $this->port = empty($parts['port']) ? null : (int) $parts['port'];
         $this->path = $parts['path'] ?? '';
         $this->query = $parts['query'] ?? '';
@@ -293,7 +293,7 @@ class Uri implements UriInterface
             $scheme = '';
         }
         $ret = clone $this;
-        $ret->scheme = Horde_String::lower((string) $scheme);
+        $ret->scheme = HordeString::lower((string) $scheme);
 
         return $ret;
     }
@@ -340,7 +340,7 @@ class Uri implements UriInterface
     public function withHost($host): self
     {
         $ret = clone $this;
-        $ret->host = Horde_String::lower($host);
+        $ret->host = HordeString::lower($host);
 
         return $ret;
     }
@@ -398,7 +398,9 @@ class Uri implements UriInterface
         $ret = clone $this;
         // remove potential query strings or hashes
         $path = strtok($path, '?#');
-        if ($path === false) $path = "";
+        if ($path === false) {
+            $path = "";
+        }
         $ret->path = $path;
 
         return $ret;
