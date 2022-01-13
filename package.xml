@@ -17,7 +17,7 @@
   <email>chuck@horde.org</email>
   <active>no</active>
  </lead>
- <date>2021-10-09</date>
+ <date>2022-01-13</date>
  <version>
   <release>3.0.0alpha6</release>
   <api>3.0.0alpha1</api>
@@ -28,7 +28,7 @@
  </stability>
  <license uri="http://www.horde.org/licenses/bsd">BSD-2-Clause</license>
  <notes>
-* 
+* |+
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -36,6 +36,8 @@
     <dir name="workflows">
      <file name="ci.yml" role="php" />
      <file name="phpdoc.yml" role="php" />
+     <file name="release.yml" role="php" />
+     <file name="update-composer-json.yml" role="php" />
      <file name="update-satis.yml" role="php" />
     </dir> <!-- /.github/workflows -->
    </dir> <!-- /.github -->
@@ -48,6 +50,7 @@
       <file name="CHANGES" role="doc" />
      </dir> <!-- /doc/Horde/Http -->
     </dir> <!-- /doc/Horde -->
+    <file name="components.conf" role="doc" />
    </dir> <!-- /doc -->
    <dir name="lib">
     <dir name="Horde">
@@ -125,7 +128,10 @@
     <file name="AllTests.php" role="test" />
     <file name="bootstrap.php" role="test" />
     <file name="conf.php.dist" role="test" />
+    <file name="ResponseTest.php" role="test" />
     <file name="ServerRequestTest.php" role="test" />
+    <file name="StreamTest.php" role="test" />
+    <file name="UriTest.php" role="test" />
    </dir> <!-- /test -->
    <file name="LICENSE" role="doc" />
   </dir> <!-- / -->
@@ -133,7 +139,7 @@
  <dependencies>
   <required>
    <php>
-    <min>7.0.0</min>
+    <min>7.4.0</min>
     <max>9.0.0alpha1</max>
     <exclude>9.0.0alpha1</exclude>
    </php>
@@ -154,7 +160,10 @@
   <filelist>
    <install as="workflows/ci.yml" name=".github/workflows/ci.yml" />
    <install as="workflows/phpdoc.yml" name=".github/workflows/phpdoc.yml" />
+   <install as="workflows/release.yml" name=".github/workflows/release.yml" />
+   <install as="workflows/update-composer-json.yml" name=".github/workflows/update-composer-json.yml" />
    <install as="workflows/update-satis.yml" name=".github/workflows/update-satis.yml" />
+   <install as="components.conf" name="doc/components.conf" />
    <install as="CHANGES" name="doc/Horde/Http/CHANGES" />
    <install as="examples/get-example-dot-com.php" name="doc/Horde/Http/examples/get-example-dot-com.php" />
    <install as="Horde/Http.php" name="lib/Horde/Http.php" />
@@ -206,7 +215,9 @@
    <install as="AllTests.php" name="test/AllTests.php" />
    <install as="bootstrap.php" name="test/bootstrap.php" />
    <install as="conf.php.dist" name="test/conf.php.dist" />
+   <install as="ResponseTest.php" name="test/ResponseTest.php" />
    <install as="ServerRequestTest.php" name="test/ServerRequestTest.php" />
+   <install as="StreamTest.php" name="test/StreamTest.php" />
    <install as="Unnamespaced/ClientTest.php" name="test/Unnamespaced/ClientTest.php" />
    <install as="Unnamespaced/CurlTest.php" name="test/Unnamespaced/CurlTest.php" />
    <install as="Unnamespaced/FopenTest.php" name="test/Unnamespaced/FopenTest.php" />
@@ -214,42 +225,10 @@
    <install as="Unnamespaced/Peclhttp2Test.php" name="test/Unnamespaced/Peclhttp2Test.php" />
    <install as="Unnamespaced/PeclhttpTest.php" name="test/Unnamespaced/PeclhttpTest.php" />
    <install as="Unnamespaced/TestBase.php" name="test/Unnamespaced/TestBase.php" />
+   <install as="UriTest.php" name="test/UriTest.php" />
    </filelist>
  </phprelease>
  <changelog>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
   <release>
    <version>
     <release>1.0.0alpha1</release>
@@ -765,7 +744,7 @@
    <date>2021-10-09</date>
    <license uri="http://www.horde.org/licenses/bsd">BSD-2-Clause</license>
    <notes>
-* 
+* |+
    </notes>
   </release>
  </changelog>
