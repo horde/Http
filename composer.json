@@ -1,5 +1,4 @@
 {
-    "minimum-stability": "dev",
     "name": "horde/http",
     "description": "HTTP client library",
     "type": "library",
@@ -17,11 +16,11 @@
             "role": "lead"
         }
     ],
-    "time": "2021-10-09",
+    "time": "2022-01-13",
     "repositories": [
         {
             "type": "composer",
-            "url": "https://horde-satis.maintaina.com/"
+            "url": "https://horde-satis.maintaina.com"
         }
     ],
     "require": {
@@ -33,7 +32,7 @@
         "psr/http-client": "^1"
     },
     "require-dev": {
-        "horde/test": "dev-FRAMEWORK_6_0"
+        "horde/test": "^3 || dev-FRAMEWORK_6_0"
     },
     "suggest": {
         "ext-curl": "*",
