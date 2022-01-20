@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Horde\Http;
 
 use Horde\Util\HordeString;
+use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -339,6 +340,17 @@ class Uri implements UriInterface
      */
     public function withHost($host): self
     {
+        if (!$host) {
+            $ret = clone $this;
+            $ret->host = '';
+
+            return $ret;
+        }
+
+        if (!filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+            throw new InvalidArgumentException('letters from a to z, the digits from 0 to 9,the hyphen (-), and the dot (.). A hostname may not start with a hyphen.');
+        }
+
         $ret = clone $this;
         $ret->host = HordeString::lower($host);
 
@@ -364,6 +376,17 @@ class Uri implements UriInterface
      */
     public function withPort($port): self
     {
+        if (is_null($port)) {
+            $ret = clone $this;
+            $ret->port = null;
+
+            return $ret;
+        }
+
+        if ($port >= 65536 || $port <= 0) {
+            throw new InvalidArgumentException('Invalid Portnumber, port must be between 1 and 65535');
+        }
+
         $ret = clone $this;
         $ret->port = (int) $port;
 
