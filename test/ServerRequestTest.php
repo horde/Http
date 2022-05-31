@@ -1,9 +1,11 @@
 <?php
 namespace Horde\Http\Test;
+
 use Phpunit\Framework\TestCase;
 use Horde\Http\RequestFactory;
 use Horde\Http\ServerRequest;
 use Horde\Http\Stream;
+use InvalidArgumentException;
 use Horde\Http\Uri;
 use Horde\Http\RequestImplementation;
 use Psr\Http\Message\StreamInterface;
@@ -43,6 +45,51 @@ class ServerRequestTest extends TestCase
     }
 
     // MessageImplementation
+    public function testHeaderDoesNotThrowErrorsForAllowedCharactersInValue()
+    {
+        $headerName = 'Testheadersssbla';
+        $headerValue = 'Trestvalue';
+        $headerValue .=  chr(0x20);
+        $headerValue .=  chr(0x05);
+        $headerValue .=  chr(0x04);
+        $headerValue .=  chr(0x03);
+        $headerValue .=  chr(0x1A);
+        $headerValue .=  chr(0x1D);
+        $headers = [];
+        $headers[$headerName] = $headerValue;
+        $request = new ServerRequest('GET', '/foo', $headers);
+        $this->assertEquals([$headerValue], $request->getHeader($headerName));
+    }
+
+    public function testHeaderThrowsExceptionWhen0a0d00InValue()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectDeprecationMessageMatches('/0a, 0d, 00$/');
+        $headerName = 'Testheadersssbla';
+        $headerValue = 'Trestvalue';
+        $headerValue .=  chr(0x0A);
+        $headerValue .=  chr(0x0D);
+        $headerValue .=  chr(0x00);
+        $headers = [];
+        $headers[$headerName] = $headerValue;
+        $request = new ServerRequest('GET', '/foo', $headers);
+    }
+
+    public function testHeaderThrowsExceptionWhenAsciiCharactersTill32InName()
+    {   // This request should be refused due to invalid ascii characters in $headerName
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectDeprecationMessageMatches('/01, 05, 0a, 00, 20$/');
+        $headerName = 'TestHeader';
+        $headerName =  chr(0x01);
+        $headerName .=  chr(0x05);
+        $headerName .=  chr(0x0A);
+        $headerName .=  chr(0x00);
+        $headerName .=  chr(0x20);
+        $headerValue = 'TestValue';
+        $headers = [];
+        $headers[$headerName] = $headerValue;
+        $request = new ServerRequest('GET', '/foo', $headers);
+    }
 
     public function testGetProtocolVersionIsString()
     {
@@ -105,7 +152,6 @@ class ServerRequestTest extends TestCase
     {
         $request = new ServerRequest('GET', '/foo');
         $this->assertFalse($request->hasHeader('TestHeader'));
-
     }
 
     public function testGetHeaderInitialHeaderValues()
@@ -116,7 +162,7 @@ class ServerRequestTest extends TestCase
             'TestHeader3' => ['val3', 'val4', 'val5'],
         ];
         $request = new ServerRequest('GET', '/foo', $headers);
-        foreach($headers as $key => $value) {
+        foreach ($headers as $key => $value) {
             if (!is_array($value)) {
                 $value = [$value];
             }
@@ -129,7 +175,7 @@ class ServerRequestTest extends TestCase
         $request = $this->requestFactory->createServerRequest('GET', '/foo');
         $headerName = 'TestHeader';
         $headerValues = [];
-        foreach (range(1,3) as $i) {
+        foreach (range(1, 3) as $i) {
             $val = "val$i";
             $request = $request->withAddedHeader($headerName, $val);
             $headerValues[] = $val;
