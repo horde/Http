@@ -1,5 +1,7 @@
 <?php
 namespace Horde\Http;
+
+use InvalidArgumentException;
 use \Horde_String;
 use \Psr\Http\Message\StreamInterface;
 
@@ -9,19 +11,19 @@ use \Psr\Http\Message\StreamInterface;
  * we already have a hierarchy of interfaces. We just copy implementation as
  * a trait
  */
-trait MessageImplementation 
+trait MessageImplementation
 {
 
-    /** 
+    /**
      * Original header names and content
-     * 
+     *
      * @var string[] Keys: Original header names
      */
     private array $headers = [];
 
-    /** 
+    /**
      * Lookup original names from normalized names
-     * 
+     *
      * @var string[] Keys: lowercase header names
      **/
     private array $headerNames = [];
@@ -29,9 +31,9 @@ trait MessageImplementation
     /** @var string */
     private string $protocolVersion = '1.1';
 
-    /** 
+    /**
      * Stream content of the message
-     * 
+     *
      * @var StreamInterface|null The stream
      */
     private $stream;
@@ -220,20 +222,74 @@ trait MessageImplementation
         return $ret;
     }
 
+    /** Adding checks following these errata: https://github.com/php-fig/fig-standards/pull/1274/files
+     *
+     * A minimally viable validator should reject header names containing the
+     * following characters:
+     *
+     * - NUL (0x00)
+     * - `\r` (0x0D)
+     * - `\n` (0x0A)
+     * - Any character less than or equal to 0x20.
+     *
+     * Concerning Header values the following characters should lead to a rejection:
+     *
+     * * - NUL (0x00)
+     * - `\r` (0x0D)
+     * - `\n` (0x0A)
+     *
+     *
+     * @param string $name the headers name.
+     * @param string[] $value the headers value(s).
+     * @throws InvalidArgumentException When the body is not valid.
+     */
+    public function checkHeaderForInvalidAsciiChars(string $name, array $value)
+    {
+        $getWrongCharacters = function ($output) {
+            $outputArray = [];
+            foreach ($output[0] as $value) {
+                $outputArray[] = bin2hex($value);
+            }
+            $erronousAsciiCharacters = implode(', ', $outputArray);
+            return $erronousAsciiCharacters;
+        };
+
+        // Checking headers name
+        if (preg_match_all('/[\x00-\x20]/', $name, $output)) {
+            // reject request
+            $erronousAsciiCharacters = $getWrongCharacters($output);
+            throw new InvalidArgumentException('Found the following invalid ASCII character-codes in header name: '.$erronousAsciiCharacters);
+        }
+
+        // Checking headers value
+        foreach ($value as $headervalue) {
+            if (preg_match_all('/[\x00\x0D\x0A]/', $headervalue, $output)) {
+                // reject request
+                $erronousAsciiCharacters = $getWrongCharacters($output);
+                throw new InvalidArgumentException('Found the following invalid ASCII character-codes in header name: '.$erronousAsciiCharacters);
+            }
+        }
+    }
+
+    
     /**
      * Store or replace a header
-     * 
+     *
      * This modifies the copy inplace. Only use it after cloning.
-     * 
+     *
      * @param string $name Case-insensitive header field name.
      * @param string|string[] $value Header value(s).
      */
-    private function storeHeader($name, $value) {
-        // TODO: Some sanity checks on header name and value
+    private function storeHeader($name, $value)
+    {
         // Value must not be an empty array
         if (!is_array($value)) {
             $value = [$value];
         }
+
+        // Some sanity checks on header name and value
+        $this->checkHeaderForInvalidAsciiChars($name, $value);
+        
         // Avoid glitches, delete and create header instead of writing into it
         if ($this->hasHeader($name)) {
             unset($this->headers[$this->getHeaderName($name)]);
@@ -258,7 +314,8 @@ trait MessageImplementation
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader($name, $value) {
+    public function withAddedHeader($name, $value)
+    {
         // TODO: Some sanity checks on header name and value
         // Value must not be an empty array
         if (!is_array($value)) {
@@ -266,7 +323,7 @@ trait MessageImplementation
         }
         if (!$this->hasHeader($name)) {
             return $this->withHeader($name, $value);
-        }        
+        }
         $ret = clone($this);
         $headerName = $ret->getHeaderName($name);
         // TODO: What if we have two distinct uc/lc forms of the same header?
