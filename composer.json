@@ -16,7 +16,7 @@
             "role": "lead"
         }
     ],
-    "time": "2022-01-13",
+    "time": "2022-05-31",
     "repositories": [
         {
             "type": "composer",
@@ -49,6 +49,11 @@
     "autoload-dev": {
         "psr-4": {
             "Horde\\Http\\Test\\": "test/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "horde/horde-installer-plugin": true
         }
     }
 }
