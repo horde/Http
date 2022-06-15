@@ -1,9 +1,10 @@
 <?php
+
 namespace Horde\Http;
 
 use InvalidArgumentException;
-use \Horde_String;
-use \Psr\Http\Message\StreamInterface;
+use Horde_String;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Reusable implementation of Message.
@@ -13,7 +14,6 @@ use \Psr\Http\Message\StreamInterface;
  */
 trait MessageImplementation
 {
-
     /**
      * Original header names and content
      *
@@ -217,7 +217,7 @@ trait MessageImplementation
      */
     public function withHeader($name, $value)
     {
-        $ret = clone($this);
+        $ret = clone ($this);
         $ret->storeHeader($name, $value);
         return $ret;
     }
@@ -248,7 +248,7 @@ trait MessageImplementation
         $getWrongCharacters = function ($output) {
             $outputArray = [];
             foreach ($output[0] as $value) {
-                $outputArray[] = bin2hex($value);
+                $outputArray[] = '0x' . bin2hex($value);
             }
             $erronousAsciiCharacters = implode(', ', $outputArray);
             return $erronousAsciiCharacters;
@@ -258,7 +258,7 @@ trait MessageImplementation
         if (preg_match_all('/[\x00-\x20]/', $name, $output)) {
             // reject request
             $erronousAsciiCharacters = $getWrongCharacters($output);
-            throw new InvalidArgumentException('Found the following invalid ASCII character-codes in header name: '.$erronousAsciiCharacters);
+            throw new InvalidArgumentException("Found the following invalid ASCII character-codes in header name '$name': " . $erronousAsciiCharacters);
         }
 
         // Checking headers value
@@ -266,12 +266,12 @@ trait MessageImplementation
             if (preg_match_all('/[\x00\x0D\x0A]/', $headervalue, $output)) {
                 // reject request
                 $erronousAsciiCharacters = $getWrongCharacters($output);
-                throw new InvalidArgumentException('Found the following invalid ASCII character-codes in header name: '.$erronousAsciiCharacters);
+                throw new InvalidArgumentException("Found the following invalid ASCII character-codes in value of header '$name': " . $erronousAsciiCharacters);
             }
         }
     }
 
-    
+
     /**
      * Store or replace a header
      *
@@ -289,7 +289,7 @@ trait MessageImplementation
 
         // Some sanity checks on header name and value
         $this->checkHeaderForInvalidAsciiChars($name, $value);
-        
+
         // Avoid glitches, delete and create header instead of writing into it
         if ($this->hasHeader($name)) {
             unset($this->headers[$this->getHeaderName($name)]);
@@ -324,7 +324,7 @@ trait MessageImplementation
         if (!$this->hasHeader($name)) {
             return $this->withHeader($name, $value);
         }
-        $ret = clone($this);
+        $ret = clone ($this);
         $headerName = $ret->getHeaderName($name);
         // TODO: What if we have two distinct uc/lc forms of the same header?
         $ret->headers[$headerName] = array_merge(
@@ -348,7 +348,7 @@ trait MessageImplementation
      */
     public function withoutHeader($name)
     {
-        $ret = clone($this);
+        $ret = clone ($this);
         $headerName = $ret->getHeaderName($name);
         unset($ret->headers[$headerName]);
         $ret->unsetHeaderName($name);

@@ -1,4 +1,5 @@
 <?php
+
 namespace Horde\Http\Test;
 
 use Phpunit\Framework\TestCase;
@@ -17,7 +18,7 @@ class ServerRequestTest extends TestCase
 {
     public function setUp(): void
     {
-        $this->requestFactory = new RequestFactory;
+        $this->requestFactory = new RequestFactory();
     }
 
     private function arrayValuesToArrays($arr)
@@ -64,7 +65,7 @@ class ServerRequestTest extends TestCase
     public function testHeaderThrowsExceptionWhen0a0d00InValue()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectDeprecationMessageMatches('/0a, 0d, 00$/');
+        $this->expectDeprecationMessageMatches('/0x0a, 0x0d, 0x00$/');
         $headerName = 'Testheadersssbla';
         $headerValue = 'Trestvalue';
         $headerValue .=  chr(0x0A);
@@ -78,7 +79,7 @@ class ServerRequestTest extends TestCase
     public function testHeaderThrowsExceptionWhenAsciiCharactersTill32InName()
     {   // This request should be refused due to invalid ascii characters in $headerName
         $this->expectException(InvalidArgumentException::class);
-        $this->expectDeprecationMessageMatches('/01, 05, 0a, 00, 20$/');
+        $this->expectDeprecationMessageMatches('/0x01, 0x05, 0x0a, 0x00, 0x20$/');
         $headerName = 'TestHeader';
         $headerName =  chr(0x01);
         $headerName .=  chr(0x05);
