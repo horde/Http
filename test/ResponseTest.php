@@ -16,12 +16,12 @@ class ResponseTest extends TestCase
     public function testStoreHeaderWithWrongHeaderValues()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectDeprecationMessageMatches('/00, 0d, 0a$/');
-        $headerName = 'Wierdtest';
-        $headerValue = 'Trestvalue';
-        $headerValue .=  chr(0x00);
+        $this->expectDeprecationMessageMatches('/0x00, 0x0d, 0x0a$/');
+        $headerName = 'TestHeader';
+        $headerValue =  chr(0x00);
         $headerValue .=  chr(0x0D);
         $headerValue .=  chr(0x0A);
+        $headerValue .= 'TestValue';
         $headers = [];
         $headers[$headerName] = $headerValue;
         $response = new Response(404, $headers, null, '1.1');
@@ -30,14 +30,14 @@ class ResponseTest extends TestCase
     public function testHeaderThrowsExceptionWithWrongHeaderNames()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectDeprecationMessageMatches('/01, 05, 0a, 00, 20$/');
-        $headerName = 'Testheadersssbla';
-        $headerValue = 'Trestvalue';
+        $this->expectDeprecationMessageMatches('/0x01, 0x05, 0x0a, 0x00, 0x20$/');
+        $headerName = 'TestHeader';
         $headerName =  chr(0x01);
         $headerName .=  chr(0x05);
         $headerName .=  chr(0x0A);
         $headerName .=  chr(0x00);
         $headerName .=  chr(0x20);
+        $headerValue = 'Testvalue';
         $headers = [];
         $headers[$headerName] = $headerValue;
         $request = new Response(404, $headers, null, '1.1');
