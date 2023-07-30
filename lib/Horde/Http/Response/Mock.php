@@ -20,6 +20,7 @@
  * @license   http://www.horde.org/licenses/bsd BSD
  * @package   Http
  */
+#[AllowDynamicProperties]
 class Horde_Http_Response_Mock extends Horde_Http_Response_Base
 {
     /**
