@@ -144,8 +144,7 @@ class Horde_Http_Request_Fopen extends Horde_Http_Request_Base
      * @param integer $errline   See set_error_handler().
      * @param array $errcontext  See set_error_handler().
      */
-    protected function _errorHandler($errno, $errstr, $errfile, $errline,
-                                     $errcontext)
+    protected function _errorHandler($errno, $errstr, $errfile, $errline)
     {
         array_unshift($this->_errors, preg_replace('/^(.*?) \[<a href[^\]]*\](.*)/', '$1$2', $errstr));
     }

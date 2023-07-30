@@ -18,7 +18,7 @@
  */
 class Horde_Http_CurlTest extends Horde_Http_TestBase
 {
-    public function setUp()
+    public function setUp(): void
     {
         if (!function_exists('curl_exec')) {
             $this->markTestSkipped('Missing PHP extension "curl"!');

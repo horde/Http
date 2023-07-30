@@ -24,7 +24,7 @@
  * @license    http://www.horde.org/licenses/bsd
  * @link       http://www.horde.org/libraries/Horde_Http
  */
-class Horde_Http_MockTest extends PHPUnit_Framework_TestCase
+class Horde_Http_MockTest extends Horde_Test_Case
 {
     public function testNoResponses()
     {

@@ -34,11 +34,9 @@ class Horde_Http_ClientTest extends Horde_Test_Case
         $this->assertEquals(10, $request->timeout);
     }
 
-    /**
-     * @expectedException Horde_Http_Exception
-     */
     public function testSetUnknownOption()
     {
+        $this->expectException('Horde_Http_Exception');
         $request = new Horde_Http_Request_Mock();
         $client = new Horde_Http_Client(
             array('request' => $request)

@@ -18,7 +18,7 @@
  */
 class Horde_Http_Peclhttp2Test extends Horde_Http_TestBase
 {
-    public function setUp()
+    public function setUp(): void
     {
         if (!class_exists('\http\Client', false)) {
             $this->markTestSkipped('Missing PHP extension "http" or wrong version!');

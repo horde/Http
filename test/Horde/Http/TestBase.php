@@ -22,13 +22,13 @@ class Horde_Http_TestBase extends Horde_Test_Case
 
     protected static $_requestClass;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         preg_match('/Horde_Http_(.*)Test/', get_called_class(), $match);
         self::$_requestClass = 'Horde_Http_Request_' . $match[1];
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         $config = self::getConfig('HTTP_TEST_CONFIG');
         if ($config && !empty($config['http']['server'])) {
@@ -47,10 +47,10 @@ class Horde_Http_TestBase extends Horde_Test_Case
         $this->assertStringStartsWith('http', $response->uri);
         $this->assertStringStartsWith('1.', $response->httpVersion);
         $this->assertEquals(200, $response->code);
-        $this->assertInternalType('array', $response->headers);
-        $this->assertInternalType('string', $response->getBody());
+        $this->assertIsArray($response->headers);
+        $this->assertIsString($response->getBody());
         $this->assertGreaterThan(0, strlen($response->getBody()));
-        $this->assertInternalType('resource', $response->getStream());
+        $this->assertIsResource($response->getStream());
         $this->assertStringMatchesFormat(
             '%s/%s',
             $response->getHeader('Content-Type')
@@ -66,22 +66,18 @@ class Horde_Http_TestBase extends Horde_Test_Case
         );
     }
 
-    /**
-     * @expectedException Horde_Http_Exception
-     */
     public function testThrowsOnBadUri()
     {
+        $this->expectException('Horde_Http_Exception');
         $client = new Horde_Http_Client(
             array('request' => new self::$_requestClass())
         );
         $client->get('http://doesntexist/');
     }
 
-    /**
-     * @expectedException Horde_Http_Exception
-     */
     public function testThrowsOnInvalidProxyType()
     {
+        $this->expectException('Horde_Http_Exception');
         $client = new Horde_Http_Client(
             array(
                 'request' => new self::$_requestClass(

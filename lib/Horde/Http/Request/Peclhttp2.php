@@ -75,7 +75,7 @@ class Horde_Http_Request_Peclhttp2 extends Horde_Http_Request_PeclhttpBase
         if (is_array($data)) {
             $body->addForm($data);
         } else {
-            $body->append($data);
+            $body->append(is_null($data) ? "" : $data);
         }
 
         $httpRequest = new \http\Client\Request($this->method, (string)$this->uri, $this->headers, $body);
