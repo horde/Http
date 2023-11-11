@@ -131,7 +131,7 @@ class Fopen implements ClientInterface
                 preg_match('/HTTP\/(\d+\.\d+) (\d{3}) (.*)$/', $this->errors[0]['message'], $matches)
             ) {
                 // Create a Response for the HTTP error code
-                return new $this->responseFactory->createResponse($matches[0]);
+                return $this->responseFactory->createResponse($matches[0]);
             } else {
                 throw new ClientException('Problem with ' . $uri . ': ' . implode('. ', array_reverse($this->errors)));
             }

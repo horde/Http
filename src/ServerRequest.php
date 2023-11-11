@@ -4,6 +4,7 @@ namespace Horde\Http;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamInterface;
 use is_array;
 use is_object;
 
@@ -73,7 +74,7 @@ class ServerRequest implements ServerRequestInterface
      *
      * @return array
      */
-    public function getServerParams()
+    public function getServerParams(): array
     {
         return $this->serverParams;
     }
@@ -88,7 +89,7 @@ class ServerRequest implements ServerRequestInterface
      *
      * @return array
      */
-    public function getCookieParams()
+    public function getCookieParams(): array
     {
         return $this->cookieParams;
     }
@@ -110,7 +111,7 @@ class ServerRequest implements ServerRequestInterface
      * @param array $cookies Array of key/value pairs representing cookies.
      * @return static
      */
-    public function withCookieParams(array $cookies)
+    public function withCookieParams(array $cookies): ServerRequestInterface
     {
         $ret = clone $this;
         $ret->cookieParams = $cookies;
@@ -130,7 +131,7 @@ class ServerRequest implements ServerRequestInterface
      *
      * @return array
      */
-    public function getQueryParams()
+    public function getQueryParams(): array
     {
         return $this->queryParams;        
     }
@@ -157,7 +158,7 @@ class ServerRequest implements ServerRequestInterface
      *     $_GET.
      * @return static
      */
-    public function withQueryParams(array $query)
+    public function withQueryParams(array $query): ServerRequestInterface
     {
         $ret = clone $this;
         $ret->queryParams = $query;
@@ -177,7 +178,7 @@ class ServerRequest implements ServerRequestInterface
      * @return array An array tree of UploadedFileInterface instances; an empty
      *     array MUST be returned if no data is present.
      */
-    public function getUploadedFiles()
+    public function getUploadedFiles(): array 
     {
         return $this->uploadedFiles;
     }
@@ -193,7 +194,7 @@ class ServerRequest implements ServerRequestInterface
      * @return static
      * @throws \InvalidArgumentException if an invalid structure is provided.
      */
-    public function withUploadedFiles(array $uploadedFiles)
+    public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
     {
         $ret = clone $this;
         $ret->uploadedFiles = $uploadedFiles;
@@ -215,7 +216,7 @@ class ServerRequest implements ServerRequestInterface
      * @return null|array|object The deserialized body parameters, if any.
      *     These will typically be an array or object.
      */
-    public function getParsedBody()
+    public function getParsedBody(): null|array|object
     {
         return $this->parsedBody;
     }
@@ -248,7 +249,7 @@ class ServerRequest implements ServerRequestInterface
      * @throws \InvalidArgumentException if an unsupported argument type is
      *     provided.
      */
-    public function withParsedBody($data)
+    public function withParsedBody($data): ServerRequestInterface
     {
         if (!is_object($data) && !is_array($data) && $data !== null) {
             throw new InvalidArgumentException('ParsedBody must be array or object or null');
@@ -269,7 +270,7 @@ class ServerRequest implements ServerRequestInterface
      *
      * @return array Attributes derived from the request.
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -312,7 +313,7 @@ class ServerRequest implements ServerRequestInterface
      * @param mixed $value The value of the attribute.
      * @return static
      */
-    public function withAttribute($name, $value)
+    public function withAttribute(string $name, $value): ServerRequestInterface
     {
         $ret = clone($this);
         $ret->attributes[$name] = $value;
@@ -333,7 +334,7 @@ class ServerRequest implements ServerRequestInterface
      * @param string $name The attribute name.
      * @return static
      */
-    public function withoutAttribute($name)
+    public function withoutAttribute(string $name): ServerRequestInterface
     {
         $ret = clone($this);
         unset($ret->attributes[$name]);

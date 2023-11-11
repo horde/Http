@@ -56,6 +56,8 @@ class PeclHttp implements ClientInterface
         Constants::AUTH_NTLM => \http\Client\Curl\AUTH_NTLM,
     ];
 
+    protected ?array $headers = null;
+    protected string $proxyType;
     /**
      * Map of proxy types from Horde_Http to implementation specific constants.
      *

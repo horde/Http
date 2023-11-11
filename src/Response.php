@@ -4,6 +4,7 @@ namespace Horde\Http;
 
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * A PSR-7 HTTP request message for Horde
@@ -42,7 +43,12 @@ class Response implements ResponseInterface
         {
             $this->storeHeader($header, $value);
         }
-        $this->body = $body;
+        if ($body instanceof StreamInterface) {
+            $this->stream = $body;
+        } elseif (is_string($body) && $body) {
+            $factory = new StreamFactory();
+            $this->stream = $factory->createStream($body);
+        }
         $this->protocolVersion = $version;
     }
 

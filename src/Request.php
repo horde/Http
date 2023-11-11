@@ -69,7 +69,7 @@ class Request implements RequestInterface
 
         $this->protocolVersion = $version;
 
-        if ($body instanceof RequestInterface) {
+        if ($body instanceof StreamInterface) {
             $this->stream = $body;
         } elseif (is_string($body) && $body) {
             $factory = new StreamFactory();

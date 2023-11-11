@@ -44,11 +44,13 @@ class Mock implements ClientInterface
     protected $responses = [];
     protected ResponseFactoryInterface $responseFactory;
     protected StreamFactoryInterface $streamFactory;
+    protected Options $options;
 
     public function __construct(ResponseFactoryInterface $responseFactory = null, StreamFactoryInterface $streamFactory = null, Options $options = null)
     {
         $this->streamFactory = $streamFactory ?? new StreamFactory();
-        $this->responseFactory = $responseFactory ?? new ResponseFactoryInterface();
+        $this->responseFactory = $responseFactory ?? new ResponseFactory();
+        $this->options = $options;
 
     }
 
@@ -56,7 +58,7 @@ class Mock implements ClientInterface
      * Set the HTTP response(s) to be returned by this adapter. This overwrites
      * any responses set before.
      *
-     * @param ResponseInterface|ResponseInterface[] $response
+     * @param ResponseInterface|ResponseInterface[] $responses
      */
     public function setResponse($responses)
     {
@@ -104,7 +106,7 @@ class Mock implements ClientInterface
             $stream = $this->streamFactory->createStreamFromResource($body);
         }
         $response = $this->responseFactory->createResponse($code)->withBody($stream);
-        foreach ($this->headers as $name => $header) {
+        foreach ($headers as $name => $header) {
             $response = $response->withAddedHeader($name, $header);
         }
         $this->responses[] = $response;
