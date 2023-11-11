@@ -3,6 +3,8 @@ namespace Horde\Http;
 use \Horde_String;
 use \Psr\Http\Message\StreamInterface;
 use \Psr\Http\Message\UriInterface;
+use \Psr\Http\Message\MessageInterface;
+use \Psr\Http\Message\RequestInterface;
 
 /**
  * Implementation of Request methods not covered by MessageImplementation.
@@ -42,7 +44,7 @@ trait RequestImplementation
      *
      * @return string
      */
-    public function getRequestTarget()
+    public function getRequestTarget(): string
     {
         $target = $this->uri->getPath();
         $query = $this->uri->getQuery();
@@ -66,7 +68,7 @@ trait RequestImplementation
      * @param mixed $requestTarget
      * @return static
      */
-    public function withRequestTarget($requestTarget)
+    public function withRequestTarget($requestTarget): RequestInterface
     {
         $pathAndQuery = explode('?', $requestTarget, 2);
         $path = $pathAndQuery[0];
@@ -82,7 +84,7 @@ trait RequestImplementation
      *
      * @return string Returns the request method.
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -102,7 +104,7 @@ trait RequestImplementation
      * @return static
      * @throws \InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod($method)
+    public function withMethod(string $method): RequestInterface
     {
         $ret = clone($this);
         $ret->method = $method;
@@ -118,7 +120,7 @@ trait RequestImplementation
      * @return UriInterface Returns a UriInterface instance
      *     representing the URI of the request.
      */
-    public function getUri()
+    public function getUri(): UriInterface
     {
         return $this->uri;
     }
@@ -153,7 +155,7 @@ trait RequestImplementation
      * @param bool $preserveHost Preserve the original state of the Host header.
      * @return static
      */
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    public function withUri(UriInterface $uri, bool $preserveHost = false): RequestInterface
     {
         $ret = clone($this);
         $ret->uri = $uri;

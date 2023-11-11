@@ -54,7 +54,7 @@ class Response implements ResponseInterface
      *
      * @return int Status code.
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->httpStatusCode;
     }
@@ -79,7 +79,7 @@ class Response implements ResponseInterface
      * @return static
      * @throws \InvalidArgumentException For invalid status code arguments.
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
         if (!array_key_exists($code, Constants::REASON_PHRASES)) {
             throw new InvalidArgumentException('Invalid HTTP status code: ' . $code);
@@ -107,7 +107,7 @@ class Response implements ResponseInterface
      * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
      * @return string Reason phrase; must return an empty string if none present.
      */
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         if ($this->httpReasonPhrase) {
             return $this->httpReasonPhrase;

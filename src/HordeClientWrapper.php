@@ -101,6 +101,8 @@ class HordeClientWrapper implements ClientInterface
      */
     public ?string $uri = null;
 
+    public ClientInterface $client = null;
+
     /**
      * HordeClientWrapper constructor.
      *

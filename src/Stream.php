@@ -80,7 +80,7 @@ class Stream implements StreamInterface
      *
      * @return void
      */
-    public function close()
+    public function close(): void
     {
         if (!empty($this->stream)) {
             fclose($this->stream);
@@ -114,7 +114,7 @@ class Stream implements StreamInterface
      *
      * @return int|null Returns the size in bytes if known, or null if unknown.
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }
@@ -125,7 +125,7 @@ class Stream implements StreamInterface
      * @return int Position of the file pointer
      * @throws \RuntimeException on error.
      */
-    public function tell()
+    public function tell(): int
     {
         $res = ftell($this->stream);
         if ($res === false) {
@@ -139,7 +139,7 @@ class Stream implements StreamInterface
      *
      * @return bool
      */
-    public function eof()
+    public function eof(): bool
     {
         return $this->stream ? feof($this->stream) : true;
     }
@@ -149,7 +149,7 @@ class Stream implements StreamInterface
      *
      * @return bool
      */
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return $this->seekable;
     }
@@ -166,7 +166,7 @@ class Stream implements StreamInterface
      *     SEEK_END: Set position to end-of-stream plus offset.
      * @throws \RuntimeException on failure.
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek(int $offset, $whence = SEEK_SET): void
     {
         if (!$this->seekable) {
             throw new RuntimeException('Could not seek this stream');
@@ -187,7 +187,7 @@ class Stream implements StreamInterface
      * @link http://www.php.net/manual/en/function.fseek.php
      * @throws \RuntimeException on failure.
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->seek(0);
     }
@@ -197,7 +197,7 @@ class Stream implements StreamInterface
      *
      * @return bool
      */
-    public function isWritable()
+    public function isWritable(): bool
     {
         return $this->writable;
     }
@@ -209,7 +209,7 @@ class Stream implements StreamInterface
      * @return int Returns the number of bytes written to the stream.
      * @throws \RuntimeException on failure.
      */
-    public function write($string)
+    public function write($string): int
     {
         $res = fwrite($this->stream, $string);
         if ($res === false) {
@@ -223,7 +223,7 @@ class Stream implements StreamInterface
      *
      * @return bool
      */
-    public function isReadable()
+    public function isReadable(): bool
     {
         return $this->readable;
     }
@@ -238,7 +238,7 @@ class Stream implements StreamInterface
      *     if no bytes are available.
      * @throws \RuntimeException if an error occurs.
      */
-    public function read($length)
+    public function read(int $length): string
     {
         $data = empty($length) ? '' : fread($this->stream, $length);
         if ($data === false) {
@@ -254,7 +254,7 @@ class Stream implements StreamInterface
      * @throws \RuntimeException if unable to read or an error occurs while
      *     reading.
      */
-    public function getContents()
+    public function getContents(): string
     {
         $contents = stream_get_contents($this->stream);
         if ($contents === false) {

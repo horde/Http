@@ -5,7 +5,8 @@ namespace Horde\Http;
 use InvalidArgumentException;
 use Horde_String;
 use Psr\Http\Message\StreamInterface;
-
+use \Psr\Http\Message\MessageInterface;
+use \Psr\Http\Message\RequestInterface;
 /**
  * Reusable implementation of Message.
  * We want to avoid creating a semantically useless hierarchy of classes as
@@ -45,7 +46,7 @@ trait MessageImplementation
      *
      * @return string HTTP protocol version.
      */
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
         return (string) $this->protocolVersion;
     }
@@ -63,7 +64,7 @@ trait MessageImplementation
      * @param string $version HTTP protocol version
      * @return static
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion(string $version): MessageInterface
     {
         $ret = clone $this;
         $ret->protocolVersion = $version;
@@ -95,7 +96,7 @@ trait MessageImplementation
      *     key MUST be a header name, and each value MUST be an array of strings
      *     for that header.
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -108,7 +109,7 @@ trait MessageImplementation
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader($name)
+    public function hasHeader(string $name): bool
     {
         return !empty($this->getHeaderName($name));
     }
@@ -127,7 +128,7 @@ trait MessageImplementation
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader($name)
+    public function getHeader(string $name): array
     {
         $origHeader = $this->getHeaderName($name);
         if (empty($origHeader)) {
@@ -195,7 +196,7 @@ trait MessageImplementation
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
      */
-    public function getHeaderLine($name)
+    public function getHeaderLine(string $name): string
     {
         return implode(', ', $this->getHeader($name));
     }
@@ -215,7 +216,7 @@ trait MessageImplementation
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withHeader($name, $value)
+    public function withHeader(string $name, $value): MessageInterface
     {
         $ret = clone ($this);
         $ret->storeHeader($name, $value);
@@ -314,7 +315,7 @@ trait MessageImplementation
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader(string $name, $value): MessageInterface
     {
         // TODO: Some sanity checks on header name and value
         // Value must not be an empty array
@@ -346,7 +347,7 @@ trait MessageImplementation
      * @param string $name Case-insensitive header field name to remove.
      * @return static
      */
-    public function withoutHeader($name)
+    public function withoutHeader(string $name): MessageInterface
     {
         $ret = clone ($this);
         $headerName = $ret->getHeaderName($name);
@@ -360,7 +361,7 @@ trait MessageImplementation
      *
      * @return StreamInterface Returns the body as a stream.
      */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         if (!$this->stream) {
             $factory = new StreamFactory();
@@ -382,7 +383,7 @@ trait MessageImplementation
      * @return static
      * @throws \InvalidArgumentException When the body is not valid.
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): MessageInterface
     {
         $ret = clone $this;
         $ret->stream = $body;
