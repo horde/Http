@@ -31,6 +31,7 @@ class Stream implements StreamInterface
     protected bool $readable;
     protected bool $writable;
     protected ?int $size = null;
+    protected ?string $uri = null;
 
     /**
      * Stream constructor
@@ -105,7 +106,7 @@ class Stream implements StreamInterface
         $this->size = null;
         $this->uri = null;
         $this->readable = false;
-        $this->writeable = false;
+        $this->writable = false;
         $this->seekable = false;
     }
 
