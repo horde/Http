@@ -17,6 +17,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Horde_Url;
 
 /**
  * Wrap a PSR-18 HTTP client into a frontend similar to the Horde_Http_Client.
@@ -84,7 +85,7 @@ class HordeClientWrapper implements ClientInterface
     /**
      * The most recent HTTP response.
      *
-     * @var Response
+     * @var ResponseInterface
      */
     protected $lastResponse;
 
@@ -92,16 +93,16 @@ class HordeClientWrapper implements ClientInterface
      * Use POST instead of PUT and DELETE, sending X-HTTP-Method-Override with
      * the intended method name instead.
      *
-     * @var boolean
+     * @var bool
      */
-    protected $httpMethodOverride = false;
+    protected bool $httpMethodOverride = false;
 
     /**
      * A predefined uri for generated requests
      */
     public ?string $uri = null;
 
-    public ClientInterface $client = null;
+    public ClientInterface $client;
 
     /**
      * HordeClientWrapper constructor.
@@ -130,7 +131,7 @@ class HordeClientWrapper implements ClientInterface
      * @param array $headers  Additional request headers.
      *
      * @throws ClientException
-     * @return Response
+     * @return ResponseInterface
      */
     public function get($uri = null, $headers = array())
     {
@@ -144,8 +145,8 @@ class HordeClientWrapper implements ClientInterface
      * @param array|string $data  Data fields or data body.
      * @param array $headers      Additional request headers.
      *
-     * @throws Horde_Http_Exception
-     * @return Horde_Http_Response_Base
+     * @throws Exception
+     * @return ResponseInterface
      */
     public function post($uri = null, $data = null, $headers = array())
     {
@@ -159,10 +160,10 @@ class HordeClientWrapper implements ClientInterface
      * @param string $data    Data body.
      * @param array $headers  Additional request headers.
      *
-     * @throws Horde_Http_Exception
-     * @return Horde_Http_Response_Base
+     * @throws Exception
+     * @return ResponseInterface
      */
-    public function put($uri = null, $data = null, $headers = array())
+    public function put($uri = null, $data = null, $headers = array()): ResponseInterface
     {
         if ($this->httpMethodOverride) {
             $headers = array_merge(
@@ -181,10 +182,10 @@ class HordeClientWrapper implements ClientInterface
      * @param string $uri     Request URI.
      * @param array $headers  Additional request headers.
      *
-     * @throws Horde_Http_Exception
-     * @return Horde_Http_Response_Base
+     * @throws Exception
+     * @return ResponseInterface
      */
-    public function delete($uri = null, $headers = array())
+    public function delete($uri = null, $headers = array()): ResponseInterface
     {
         if ($this->httpMethodOverride) {
             $headers = array_merge(
@@ -203,8 +204,8 @@ class HordeClientWrapper implements ClientInterface
      * @param string $uri     Request URI.
      * @param array $headers  Additional request headers.
      *
-     * @throws Horde_Http_Exception
-     * @return Horde_Http_Response_Base
+     * @throws Exception
+     * @return ResponseInterface
      */
     public function head($uri = null, $headers = array())
     {
@@ -225,7 +226,7 @@ class HordeClientWrapper implements ClientInterface
      *                               request only.
      *
      * @throws ClientException
-     * @return Response
+     * @return ResponseInterface
      */
     public function request(
         string $method, $uri = null, $data = null, iterable $headers = []

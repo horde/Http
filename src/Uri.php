@@ -538,7 +538,7 @@ class Uri implements UriInterface
      * @param string $schema
      * @param int|null $port
      *
-     * @return string
+     * @return null|int
      */
     private function nullStandardPorts(string $schema, ?int $port): ?int
     {

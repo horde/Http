@@ -18,7 +18,7 @@ trait MessageImplementation
     /**
      * Original header names and content
      *
-     * @var string[] Keys: Original header names
+     * @var string[][] Keys: Original header names
      */
     private array $headers = [];
 
@@ -281,9 +281,9 @@ trait MessageImplementation
      * @param string $name Case-insensitive header field name.
      * @param string|string[] $value Header value(s).
      */
-    private function storeHeader($name, $value)
+    private function storeHeader($name, string|array $value)
     {
-        // Value must not be an empty array
+        // Always store value in array format
         if (!is_array($value)) {
             $value = [$value];
         }

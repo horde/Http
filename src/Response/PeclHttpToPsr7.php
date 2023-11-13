@@ -4,7 +4,7 @@ use \Psr\Http\Message\ResponseFactoryInterface;
 use \Psr\Http\Message\ResponseInterface;
 use \Psr\Http\Message\StreamFactoryInterface;
 use \Psr\Http\Message\StreamInterface;
-use http\Client\Response;
+use http\Client\Response as PeclHttpResponse;
 use Horde\Http\ClientException;
 
 /**
@@ -16,11 +16,11 @@ trait PeclHttpToPsr7
     /**
      * Convert to PSR-7 format
      * 
-     * @param http\Client\Response $httpResponse The httpClient response
+     * @param PeclHttpResponse $httpResponse The httpClient response
      * 
      * @return ResponseInterface The PSR-7 equivalent
      */
-    private function convertPeclHttpResponseToPsr7(Response $httpResponse
+    private function convertPeclHttpResponseToPsr7(PeclHttpResponse $httpResponse
     ): ResponseInterface
     {
         try {

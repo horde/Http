@@ -14,6 +14,7 @@
  */
 declare(strict_types=1);
 namespace Horde\Http\Client;
+use OutOfBoundsException;
 use Horde\Http\Response;
 use Horde\Http\ResponseFactory;
 use Horde\Http\StreamFactory;
@@ -83,7 +84,7 @@ class Mock implements ClientInterface
     /**
      * Adds a response to the stack of responses.
      *
-     * @param string|resourse $body    The response body content.
+     * @param string|resource $body    The response body content.
      * @param string          $code    The response code.
      * @param string          $uri     The request uri.
      * @param array           $headers Response headers. This can be one string
@@ -91,11 +92,11 @@ class Mock implements ClientInterface
      *                                 of strings with one string per header
      *                                 line.
      *
-     * @return Response The response.
+     * @return ResponseInterface The response.
      */
     public function addResponse(
-        $body, $code = 200, $uri = '', $headers = []
-    )
+        $body, string|int $code = 200, string $uri = '', array $headers = []
+    ): ResponseInterface
     {
         // TODO: What about the uri?
         if ($body instanceof StreamInterface) {
@@ -119,11 +120,11 @@ class Mock implements ClientInterface
     public function sendRequest(RequestInterface $request): ResponseInterface
     {
         if (empty($this->responses)) {
-            return null;
+            throw new OutOfBoundsException('sendRequest Mock tried to supply a response which was not loaded first');
         }
         if (count($this->responses) > 1) {
             return array_shift($this->responses);
         }
-        return $this->responses[0];        
+        return $this->responses[0];
     }
 }

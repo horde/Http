@@ -171,6 +171,17 @@ class ServerRequestTest extends TestCase
         }
     }
 
+    public function testAlwaysReturnArrayHeaders()
+    {
+        $headers = [
+            'TestHeader1' => 'val1',
+        ];
+        $request = new ServerRequest('GET', '/foo', $headers);
+        $this->assertIsArray($request->getHeader('TestHeader1'));
+        $request = $request->withHeader('Added1', 'added1value');
+        $this->assertEquals(['added1value'], $request->getHeader('added1'));
+    }
+
     public function testMultipleAddedHeaderValues()
     {
         $request = $this->requestFactory->createServerRequest('GET', '/foo');

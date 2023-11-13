@@ -24,9 +24,9 @@ trait RequestImplementation
     /**
      * URI
      * 
-     * @var Uri
+     * @var UriInterface
      */
-    private ?Uri $uri;
+    private ?UriInterface $uri;
 
     /**
      * Retrieves the message's request target.

@@ -108,6 +108,7 @@ class Stream implements StreamInterface
         $this->readable = false;
         $this->writable = false;
         $this->seekable = false;
+        return $ret;
     }
 
     /**

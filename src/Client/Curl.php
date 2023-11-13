@@ -189,9 +189,9 @@ class Curl implements ClientInterface
      *
      * @param string $httpAuthScheme
      * @throws ClientException
-     * @return string
+     * @return int
      */
-    protected function httpAuthScheme(string $httpAuthScheme): string
+    protected function httpAuthScheme(string $httpAuthScheme): int
     {
         if (!isset(self::HTTP_AUTH_SCHEMES[$httpAuthScheme])) {
             throw new ClientException('Unsupported authentication scheme (' . $httpAuthScheme . ')');
