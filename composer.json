@@ -33,7 +33,8 @@
         "psr/http-client": "^1.0.3"
     },
     "require-dev": {
-        "horde/test": "^3 || dev-FRAMEWORK_6_0"
+        "horde/test": "^3 || dev-FRAMEWORK_6_0",
+        "horde/url": "dev-FRAMEWORK_6_0"
     },
     "suggest": {
         "ext-curl": "*",

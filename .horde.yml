@@ -40,6 +40,7 @@ dependencies:
   dev:
     composer:
       horde/test: ^3
+      horde/url: ^3
   optional:
     ext:
       curl: '*'
