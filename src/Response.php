@@ -34,7 +34,7 @@ class Response implements ResponseInterface
      *
      *
      */
-    public function __construct(int $status = 200, iterable $headers = [], $body = null, string $version = '1.1', string $reason = null)
+    public function __construct(int $status = 200, iterable $headers = [], $body = null, string $version = '1.1', ?string $reason = null)
     {
         $this->httpStatusCode = $status;
         $this->httpReasonPhrase = $reason;

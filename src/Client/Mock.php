@@ -47,7 +47,7 @@ class Mock implements ClientInterface
     protected StreamFactoryInterface $streamFactory;
     protected Options $options;
 
-    public function __construct(ResponseFactoryInterface $responseFactory = null, StreamFactoryInterface $streamFactory = null, Options $options = null)
+    public function __construct(?ResponseFactoryInterface $responseFactory = null, ?StreamFactoryInterface $streamFactory = null, ?Options $options = null)
     {
         $this->streamFactory = $streamFactory ?? new StreamFactory();
         $this->responseFactory = $responseFactory ?? new ResponseFactory();
