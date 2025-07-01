@@ -1,4 +1,15 @@
 ---
+3.0.0-beta1:
+  api: 3.0.0-alpha1
+  state:
+    release: beta
+    api: alpha
+  date: 2025-07-01
+  license:
+    identifier: BSD-2-Clause
+    uri: http://www.horde.org/licenses/bsd
+  notes: |
+    chore: Advertise implementions for psr/http-message, psr/http-factory, psr/http-client
 3.0.0-alpha8:
   api: 3.0.0-alpha1
   state:
