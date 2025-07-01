@@ -28,15 +28,16 @@ state:
 license:
   identifier: BSD-2-Clause
   uri: http://www.horde.org/licenses/bsd
+provides:
+  psr/http-message-implementation: ^2
+  psr/http-factory-implementation: ^1.0.2
+  psr/http-client-implementation: ^1.0.3
 dependencies:
   required:
     php: ^7.4 || ^8
     composer:
       horde/exception: ^3
       horde/support: ^3
-      psr/http-message: ^2
-      psr/http-factory: ^1.0.2
-      psr/http-client: ^1.0.3
   dev:
     composer:
       horde/test: ^3
