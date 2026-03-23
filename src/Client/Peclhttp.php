@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2021 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -12,6 +13,7 @@
  * @package  Http
  */
 declare(strict_types=1);
+
 namespace Horde\Http\Client;
 
 use Horde\Http\Constants;
@@ -28,12 +30,13 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Client\ClientExceptionInterface;
-use \Horde_Support_CaseInsensitiveArray;
+use Horde_Support_CaseInsensitiveArray;
+
 /**
- * HTTP client for the pecl_http extension 
- * 
+ * HTTP client for the pecl_http extension
+ *
  * Driver is suitable for PeclHttp 3.x (PHP7) and 4.x (PHP 8) extension versions
- * 
+ *
  * PeclHttp used to be the name for the 1.x backend but this is no longer supported
  *
  * Ported from the original Request/Response implementation
@@ -65,7 +68,7 @@ class PeclHttp implements ClientInterface
      */
     protected $proxyTypes = [
         Constants::PROXY_SOCKS4 => \http\Client\Curl\PROXY_SOCKS4,
-        Constants::PROXY_SOCKS5 => \http\Client\Curl\PROXY_SOCKS5
+        Constants::PROXY_SOCKS5 => \http\Client\Curl\PROXY_SOCKS5,
     ];
     protected StreamFactoryInterface $streamFactory;
     protected ResponseFactoryInterface $responseFactory;
@@ -115,13 +118,13 @@ class PeclHttp implements ClientInterface
         // Set options
         $httpOptions = [
             'headers' => $this->headers,
-            'redirect' => (int)$this->options->getOption('redirects'),
+            'redirect' => (int) $this->options->getOption('redirects'),
             'ssl' => [
                 'verifypeer' => $this->options->getOption('verifyPeer'),
-                'verifyhost' => $this->options->getOption('verifyPeer')
+                'verifyhost' => $this->options->getOption('verifyPeer'),
             ],
             'timeout' => $this->options->getOption('timeout'),
-            'useragent' => $this->options->getOption('userAgent')
+            'useragent' => $this->options->getOption('userAgent'),
         ];
 
         // Proxy settings
@@ -136,7 +139,7 @@ class PeclHttp implements ClientInterface
             }
             if ($this->proxyType == Constants::PROXY_SOCKS4 || $this->proxyType == Constants::PROXY_SOCKS5) {
                 $httpOptions['proxytype'] = $this->proxyType();
-            } else if ($this->options->getOption('proxyType') != Constants::PROXY_HTTP) {
+            } elseif ($this->options->getOption('proxyType') != Constants::PROXY_HTTP) {
                 throw new ClientException(sprintf('Proxy type %s not supported by this request type!', $this->options->getOption('proxyType')));
             }
         }

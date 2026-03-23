@@ -1,14 +1,16 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Horde\Http;
+
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
-
 /**
  * A PSR-7 HTTP request message for Horde
- * 
+ *
  * The RequestInterface is supposed to be used by a client making a request.
  * When processing an incoming request on the server, use ServerRequest.
  *
@@ -35,13 +37,13 @@ class Request implements RequestInterface
 
     /**
      * Request Constructor
-     * 
+     *
      * @param string $method HTTP method
      * @param string|UriInterface $uri URI
      * @param iterable $headers Request headers
      * @param string|resource|StreamInterface|null $body Request body
      * @param string $version Protocol version
-     * 
+     *
      * @TODO: On PHP 8, use property parameters and union types
      */
     public function __construct(string $method, $uri, iterable $headers = [], $body = null, string $version = '1.1')

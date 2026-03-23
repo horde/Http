@@ -1,12 +1,14 @@
 <?php
+
 /**
  * NetworkException class conforming PSR-18 Http Client interface
  */
 declare(strict_types=1);
+
 namespace Horde\Http;
+
 use Psr\Http\Client\RequestExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-
 
 /**
  * Exception for when a request failed.

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Horde\Http;
 
 use Psr\Http\Message\StreamInterface;
@@ -10,8 +12,6 @@ use Psr\Http\Message\StreamFactoryInterface;
 
 class UploadedFile implements UploadedFileInterface
 {
-
-
     protected ?string $originalName;
     protected ?string $mimeType;
     protected ?int $error;
@@ -24,17 +24,17 @@ class UploadedFile implements UploadedFileInterface
 
     /**
      * $copyChunkSize
-     * 
+     *
      * When copying a stream by reading and writing,
      * use chunks of 256k to prevent allocating large amounts of memory
-     * 
+     *
      * @var int
      */
     private int $copyChunkSize = 262144;
 
 
     /**
-     * 
+     *
      */
     public function __construct(
         StreamInterface $stream,
@@ -43,8 +43,7 @@ class UploadedFile implements UploadedFileInterface
         string $clientMediaType,
         ?int $error,
         ?int $size = null
-    )
-    {
+    ) {
         $this->stream = $stream;
         $this->streamFactory = $streamFactory;
         $this->size = $size;
@@ -65,7 +64,7 @@ class UploadedFile implements UploadedFileInterface
      * an exception.
      *
      * @return StreamInterface Stream representation of the uploaded file.
-     * @throws \RuntimeException in cases when no stream is available or can be
+     * @throws RuntimeException in cases when no stream is available or can be
      *     created.
      */
     public function getStream(): StreamInterface
@@ -105,8 +104,8 @@ class UploadedFile implements UploadedFileInterface
      * @see http://php.net/is_uploaded_file
      * @see http://php.net/move_uploaded_file
      * @param string $targetPath Path to which to move the uploaded file.
-     * @throws \InvalidArgumentException if the $targetPath specified is invalid.
-     * @throws \RuntimeException on any error during the move operation, or on
+     * @throws InvalidArgumentException if the $targetPath specified is invalid.
+     * @throws RuntimeException on any error during the move operation, or on
      *     the second or subsequent call to the method.
      */
     public function moveTo(string $targetPath): void
@@ -124,10 +123,10 @@ class UploadedFile implements UploadedFileInterface
         while (!$this->stream->eof()) {
             $target->write($this->stream->read($this->copyChunkSize));
         }
-        
+
         $this->hasCalledMoveTo = true;
     }
-    
+
     /**
      * Retrieve the file size.
      *
@@ -137,11 +136,11 @@ class UploadedFile implements UploadedFileInterface
      *
      * @return int|null The file size in bytes or null if unknown.
      */
-    public function getSize(): int|null
+    public function getSize(): ?int
     {
         return $this->size;
     }
-    
+
     /**
      * Retrieve the error associated with the uploaded file.
      *
@@ -160,7 +159,7 @@ class UploadedFile implements UploadedFileInterface
     {
         return $this->error;
     }
-    
+
     /**
      * Retrieve the filename sent by the client.
      *
@@ -174,11 +173,11 @@ class UploadedFile implements UploadedFileInterface
      * @return string|null The filename sent by the client or null if none
      *     was provided.
      */
-    public function getClientFilename(): string|null
+    public function getClientFilename(): ?string
     {
-        return $this->clientFileName;        
+        return $this->clientFileName;
     }
-    
+
     /**
      * Retrieve the media type sent by the client.
      *
@@ -192,7 +191,7 @@ class UploadedFile implements UploadedFileInterface
      * @return string|null The media type sent by the client or null if none
      *     was provided.
      */
-    public function getClientMediaType(): string|null
+    public function getClientMediaType(): ?string
     {
         return $this->clientMediaType;
     }

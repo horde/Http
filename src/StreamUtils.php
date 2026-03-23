@@ -1,17 +1,21 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Horde\Http;
-use \Psr\Http\Message\StreamInterface;
+
+use Psr\Http\Message\StreamInterface;
 use InvalidArgumentException;
+
 /**
  * Static utilities for PSR-7 Stream objects
  */
 class StreamUtils
 {
     /**
-     * 
+     *
      */
-    const MB16 = 16777216;
+    public const MB16 = 16777216;
 
     public static function copyStreamToResource(StreamInterface $stream, $resource, int $buffer = self::MB16)
     {

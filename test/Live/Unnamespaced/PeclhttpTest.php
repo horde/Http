@@ -1,13 +1,15 @@
 <?php
+
 /**
- * Copyright 2014-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2014-2026 Horde LLC (http://www.horde.org/)
  *
  * @category   Horde
  * @package    Http
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
-namespace Horde\Http\Test\Unnamespaced;
+
+namespace Horde\Http\Test\Live\Unnamespaced;
 
 /**
  * Unit tests for version 1.x of the PECL http extension.
@@ -16,6 +18,7 @@ namespace Horde\Http\Test\Unnamespaced;
  * @package    Http
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
+ * @coversNothing
  */
 class PeclhttpTest extends TestBase
 {

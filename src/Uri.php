@@ -8,6 +8,9 @@ use Horde\Util\HordeString;
 use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 
+use function ltrim;
+use function sprintf;
+
 /**
  * Uri implementation from PSR-7.
  * This has some overlap with Horde_Url but does not have all the features of Horde_Url.
@@ -69,7 +72,7 @@ class Uri implements UriInterface
         }
         $parts = parse_url($uri);
         if ($parts === false) {
-            throw new \InvalidArgumentException(\sprintf('Unable to parse URI: "%s"', $uri));
+            throw new InvalidArgumentException(sprintf('Unable to parse URI: "%s"', $uri));
         }
         // Fill the privates
         $this->scheme = isset($parts['scheme']) ? HordeString::lower($parts['scheme']) : '';
@@ -285,7 +288,7 @@ class Uri implements UriInterface
      *
      * @param string $scheme The scheme to use with the new instance.
      * @return static A new instance with the specified scheme.
-     * @throws \InvalidArgumentException for invalid or unsupported schemes.
+     * @throws InvalidArgumentException for invalid or unsupported schemes.
      */
     public function withScheme($scheme): self
     {
@@ -336,7 +339,7 @@ class Uri implements UriInterface
      *
      * @param string $host The hostname to use with the new instance.
      * @return static A new instance with the specified host.
-     * @throws \InvalidArgumentException for invalid hostnames.
+     * @throws InvalidArgumentException for invalid hostnames.
      */
     public function withHost($host): self
     {
@@ -372,7 +375,7 @@ class Uri implements UriInterface
      * @param null|int $port The port to use with the new instance; a null value
      *     removes the port information.
      * @return static A new instance with the specified port.
-     * @throws \InvalidArgumentException for invalid ports.
+     * @throws InvalidArgumentException for invalid ports.
      */
     public function withPort($port): self
     {
@@ -414,7 +417,7 @@ class Uri implements UriInterface
      *
      * @param string $path The path to use with the new instance.
      * @return static A new instance with the specified path.
-     * @throws \InvalidArgumentException for invalid paths.
+     * @throws InvalidArgumentException for invalid paths.
      */
     public function withPath($path): self
     {
@@ -442,7 +445,7 @@ class Uri implements UriInterface
      *
      * @param string $query The query string to use with the new instance.
      * @return static A new instance with the specified query string.
-     * @throws \InvalidArgumentException for invalid query strings.
+     * @throws InvalidArgumentException for invalid query strings.
      */
     public function withQuery($query): self
     {
@@ -515,7 +518,7 @@ class Uri implements UriInterface
                 $path = '/' . $path;
             }
             if (empty($authority) && substr($path, 0, 2) == '//') {
-                $path = '/' . \ltrim($path, '/');
+                $path = '/' . ltrim($path, '/');
             }
             $uri .= $path;
         }

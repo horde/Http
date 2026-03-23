@@ -50,3 +50,7 @@ dependencies:
       curl: '*'
       http: '*'
 vendor: horde
+
+quality:
+  phpstan:
+    level: 9

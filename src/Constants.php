@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -11,7 +12,9 @@
  * @package  Http
  */
 declare(strict_types=1);
+
 namespace Horde\Http;
+
 /**
  * Constants for Horde_Http.
  *
@@ -45,7 +48,7 @@ class Constants
     public const URI_SCHEMATA = [
         'ftp' => 21,
         'http' => 80,
-        'https' => 443
+        'https' => 443,
     ];
 
 
@@ -56,18 +59,18 @@ class Constants
         'a+', 'c+', 'r','r+', 'w+', 'x+',
         'a+b', 'c+b', 'rb','r+b', 'w+b', 'x+b',
         'a+t', 'c+t', 'rt','r+t', 'w+t', 'x+t',
-        
+
     ];
 
     /**
      * Stream modes that can be written to
-     * 
+     *
      * @const WRITABLE_STREAM_MODES string[] Modes as reported by stream_get_meta
      */
     public const WRITABLE_STREAM_MODES = [
         'a', 'a+', 'w', 'w+', 'r+', 'rw', 'x+', 'c+',
-        'wb', 'w+b', 'r+b', 'x+b', 'c+b', 
-        'w+t', 'r+t', 'x+t', 'c+t'
+        'wb', 'w+b', 'r+b', 'x+b', 'c+b',
+        'w+t', 'r+t', 'x+t', 'c+t',
     ];
 
     /**

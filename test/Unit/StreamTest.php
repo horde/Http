@@ -1,23 +1,25 @@
 <?php
 
-namespace Horde\Http\Test;
+namespace Horde\Http\Test\Unit;
 
 use Phpunit\Framework\TestCase;
 use Horde\Http\Stream;
 use Psr\Http\Message\StreamInterface;
 use InvalidArgumentException;
 
+/**
+ * @coversNothing
+ */
 class StreamTest extends TestCase
 {
-    public function setUp(): void
-    {
-    }
+    public function setUp(): void {}
 
     public function testIsSeekable()
     {
         $stream = new Stream(fopen('php://temp', 'r'));
         $isReadable = $stream->isSeekable();
-        $this->assertSame(true, $isReadable);;
+        $this->assertSame(true, $isReadable);
+        ;
     }
 
     public function testIsNotSeekable()
@@ -25,7 +27,8 @@ class StreamTest extends TestCase
         $stream = new Stream(fopen('php://temp', 'r'));
         $stream->close();
         $isReadable = $stream->isSeekable();
-        $this->assertSame(false, $isReadable);;
+        $this->assertSame(false, $isReadable);
+        ;
     }
 
     public function testExceptionWhenNoResource()
@@ -69,7 +72,8 @@ class StreamTest extends TestCase
     {
         $stream = new Stream(fopen('php://temp', 'r+'));
         $tell = $stream->tell();
-        $this->assertSame(0, $tell);;
+        $this->assertSame(0, $tell);
+        ;
     }
 
     public function testTell()
@@ -77,7 +81,8 @@ class StreamTest extends TestCase
         $stream = new Stream(fopen('php://temp', 'r+'));
         $stream->write('123456789TestXYZ');
         $tell = $stream->tell();
-        $this->assertSame(16, $tell);;
+        $this->assertSame(16, $tell);
+        ;
     }
 
     public function testWriteReadAndEof()

@@ -1,10 +1,13 @@
 <?php
+
 namespace Horde\Http;
-use \Horde_String;
-use \Psr\Http\Message\StreamInterface;
-use \Psr\Http\Message\UriInterface;
-use \Psr\Http\Message\MessageInterface;
-use \Psr\Http\Message\RequestInterface;
+
+use Horde_String;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\RequestInterface;
+use InvalidArgumentException;
 
 /**
  * Implementation of Request methods not covered by MessageImplementation.
@@ -12,18 +15,18 @@ use \Psr\Http\Message\RequestInterface;
  * Intended for use with Request (client-oriented interface) and ServerRequest.
  * Use together with MessageImplementation.
  */
-trait RequestImplementation 
+trait RequestImplementation
 {
     /**
      * HTTP Verb
-     * 
+     *
      * @var ?string
      */
     private ?string $method;
 
     /**
      * URI
-     * 
+     *
      * @var UriInterface
      */
     private ?UriInterface $uri;
@@ -102,7 +105,7 @@ trait RequestImplementation
      *
      * @param string $method Case-sensitive method.
      * @return static
-     * @throws \InvalidArgumentException for invalid HTTP methods.
+     * @throws InvalidArgumentException for invalid HTTP methods.
      */
     public function withMethod(string $method): RequestInterface
     {

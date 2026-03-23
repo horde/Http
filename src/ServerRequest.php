@@ -1,6 +1,9 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Horde\Http;
+
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\RequestInterface;
@@ -10,10 +13,10 @@ use is_object;
 
 /**
  * A PSR-7 HTTP server request message for Horde
- * 
+ *
  * The RequestInterface is supposed to be used by a client making a request.
  * When processing an incoming request on the server, use ServerRequestInterface.
- * 
+ *
  */
 class ServerRequest implements ServerRequestInterface
 {
@@ -59,7 +62,7 @@ class ServerRequest implements ServerRequestInterface
             $factory = new StreamFactory();
             $this->stream = $factory->createStream($body);
         }
-        // If body is null or empty string, it will create an empty stream on access   
+        // If body is null or empty string, it will create an empty stream on access
         $this->serverParams = $serverParams;
 
         // TODO: parse queryParams from uri
@@ -133,7 +136,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getQueryParams(): array
     {
-        return $this->queryParams;        
+        return $this->queryParams;
     }
 
     /**
@@ -163,7 +166,7 @@ class ServerRequest implements ServerRequestInterface
         $ret = clone $this;
         $ret->queryParams = $query;
 
-        return $ret;        
+        return $ret;
     }
 
     /**
@@ -178,7 +181,7 @@ class ServerRequest implements ServerRequestInterface
      * @return array An array tree of UploadedFileInterface instances; an empty
      *     array MUST be returned if no data is present.
      */
-    public function getUploadedFiles(): array 
+    public function getUploadedFiles(): array
     {
         return $this->uploadedFiles;
     }
@@ -192,7 +195,7 @@ class ServerRequest implements ServerRequestInterface
      *
      * @param array $uploadedFiles An array tree of UploadedFileInterface instances.
      * @return static
-     * @throws \InvalidArgumentException if an invalid structure is provided.
+     * @throws InvalidArgumentException if an invalid structure is provided.
      */
     public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
     {
@@ -216,7 +219,7 @@ class ServerRequest implements ServerRequestInterface
      * @return null|array|object The deserialized body parameters, if any.
      *     These will typically be an array or object.
      */
-    public function getParsedBody(): null|array|object
+    public function getParsedBody(): array|object|null
     {
         return $this->parsedBody;
     }
@@ -246,7 +249,7 @@ class ServerRequest implements ServerRequestInterface
      * @param null|array|object $data The deserialized body data. This will
      *     typically be in an array or object.
      * @return static
-     * @throws \InvalidArgumentException if an unsupported argument type is
+     * @throws InvalidArgumentException if an unsupported argument type is
      *     provided.
      */
     public function withParsedBody($data): ServerRequestInterface

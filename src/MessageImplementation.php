@@ -5,8 +5,9 @@ namespace Horde\Http;
 use InvalidArgumentException;
 use Horde_String;
 use Psr\Http\Message\StreamInterface;
-use \Psr\Http\Message\MessageInterface;
-use \Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\RequestInterface;
+
 /**
  * Reusable implementation of Message.
  * We want to avoid creating a semantically useless hierarchy of classes as
@@ -214,7 +215,7 @@ trait MessageImplementation
      * @param string $name Case-insensitive header field name.
      * @param string|string[] $value Header value(s).
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
+     * @throws InvalidArgumentException for invalid header names or values.
      */
     public function withHeader(string $name, $value): MessageInterface
     {
@@ -313,7 +314,7 @@ trait MessageImplementation
      * @param string $name Case-insensitive header field name to add.
      * @param string|string[] $value Header value(s).
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
+     * @throws InvalidArgumentException for invalid header names or values.
      */
     public function withAddedHeader(string $name, $value): MessageInterface
     {
@@ -381,7 +382,7 @@ trait MessageImplementation
      *
      * @param StreamInterface $body Body.
      * @return static
-     * @throws \InvalidArgumentException When the body is not valid.
+     * @throws InvalidArgumentException When the body is not valid.
      */
     public function withBody(StreamInterface $body): MessageInterface
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Horde\Http\Test;
+namespace Horde\Http\Test\Unit;
 
 use AssertionError;
 use Phpunit\Framework\TestCase;
@@ -16,9 +16,13 @@ use Psr\Http\Message\UriInterface;
 use ReflectionMethod;
 use InvalidArgumentException;
 
+/**
+ * @coversNothing
+ */
 class UriTest extends TestCase
 {
     private Uri $url;
+    protected RequestFactory $requestFactory;
 
     public function setUp(): void
     {

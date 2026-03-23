@@ -1,21 +1,23 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Horde\Http;
+
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
-
 use InvalidArgumentException;
 
 /**
  * Factory for Client and Server representations of a HTTP request object
- * 
+ *
  * Request is intended to be sent by a HTTP client.
- * 
+ *
  * ServerRequest is intended to be used in a server side request handler stack
- * 
+ *
  */
 class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInterface
 {

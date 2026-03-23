@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Basic example for fetching a page with Horde\Http\Client
  *
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * @author   Chuck Hagenbuch <chuck@horde.org>
  * @license  http://www.horde.org/licenses/bsd BSD
@@ -34,25 +35,25 @@ echo $response->getBody();
 // PSR-18 client
 
 $client = new CurlClient(
-    new ResponseFactory,
-    new StreamFactory,
-    new ClientOptions
+    new ResponseFactory(),
+    new StreamFactory(),
+    new ClientOptions()
 );
 print("Modern PSR-18 Curl Client: Plain HTTP GET\n");
-$requestFactory = new RequestFactory;
+$requestFactory = new RequestFactory();
 $request = $requestFactory->createRequest('GET', 'http://www.horde.org');
 $response = $client->sendRequest($request);
-print($response->getStatusCode() . "\n\n" . $response->getReasonPhrase() ."\n\n");
+print($response->getStatusCode() . "\n\n" . $response->getReasonPhrase() . "\n\n");
 
 print("Modern PSR-18 Curl Client: HTTPS GET\n");
-$requestFactory = new RequestFactory;
+$requestFactory = new RequestFactory();
 $request = $requestFactory->createRequest('GET', 'https://www.horde.org');
 $response = $client->sendRequest($request);
-print($response->getStatusCode() . "\n\n" . $response->getReasonPhrase() ."\n\n");
+print($response->getStatusCode() . "\n\n" . $response->getReasonPhrase() . "\n\n");
 
 print("Modern PSR-18 Curl Client: HTTPS GitHub\n");
-$requestFactory = new RequestFactory;
+$requestFactory = new RequestFactory();
 $request = $requestFactory->createRequest('GET', 'https://api.github.com/');
 $response = $client->sendRequest($request);
-print($response->getStatusCode() . "\n\n" . $response->getReasonPhrase() ."\n\n");
+print($response->getStatusCode() . "\n\n" . $response->getReasonPhrase() . "\n\n");
 print($response->getBody()->getContents());
