@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Horde\Http;
 
 use InvalidArgumentException;
@@ -39,8 +41,7 @@ class Response implements ResponseInterface
         $this->httpStatusCode = $status;
         $this->httpReasonPhrase = $reason;
 
-        foreach ($headers as $header => $value)
-        {
+        foreach ($headers as $header => $value) {
             $this->storeHeader($header, $value);
         }
         if ($body instanceof StreamInterface) {
@@ -83,7 +84,7 @@ class Response implements ResponseInterface
      *     provided status code; if none is provided, implementations MAY
      *     use the defaults as suggested in the HTTP specification.
      * @return static
-     * @throws \InvalidArgumentException For invalid status code arguments.
+     * @throws InvalidArgumentException For invalid status code arguments.
      */
     public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {

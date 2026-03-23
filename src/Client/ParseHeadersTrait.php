@@ -1,13 +1,14 @@
 <?php
+
 namespace Horde\Http\Client;
-use \Horde_Support_CaseInsensitiveArray as CaseInsensitiveArray;
+
+use Horde_Support_CaseInsensitiveArray as CaseInsensitiveArray;
 
 trait ParseHeadersTrait
 {
-
     /**
      * Catch a parsed http return code
-     * 
+     *
      * Some clients like fopen rely on this.
      */
     private $parsedCode = null;
@@ -15,7 +16,7 @@ trait ParseHeadersTrait
 
     /**
      * Parse a string or array of strings into a set of headers
-     * 
+     *
      * We might move this to a trait
      */
     private function parseHeaders($headers)
@@ -37,7 +38,7 @@ trait ParseHeadersTrait
             // start over.
             if (preg_match('/^HTTP\/(\d.\d) (\d{3})/', $headerLine, $httpMatches)) {
                 $this->parsedHttpVersion = $httpMatches[1];
-                $this->parsedCode = (int)$httpMatches[2];
+                $this->parsedCode = (int) $httpMatches[2];
                 $bucket = new CaseInsensitiveArray();
                 $lastHeader = null;
             }
@@ -52,7 +53,7 @@ trait ParseHeadersTrait
 
                 if ($tmp = $bucket[$headerName]) {
                     if (!is_array($tmp)) {
-                        $tmp = array($tmp);
+                        $tmp = [$tmp];
                     }
                     $tmp[] = $headerValue;
                     $headerValue = $tmp;
@@ -60,8 +61,8 @@ trait ParseHeadersTrait
 
                 $bucket[$headerName] = $headerValue;
                 $lastHeader = $headerName;
-            } elseif (preg_match("|^\s+(.+)$|", $headerLine, $m) &&
-                      !is_null($lastHeader)) {
+            } elseif (preg_match("|^\s+(.+)$|", $headerLine, $m)
+                      && !is_null($lastHeader)) {
                 if (is_array($bucket[$lastHeader])) {
                     $tmp = $bucket[$lastHeader];
                     end($tmp);

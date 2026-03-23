@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2020-2021 Horde LLC (http://www.horde.org/)
+ * Copyright 2020-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -11,7 +12,9 @@
  * @package  Http
  */
 declare(strict_types=1);
+
 namespace Horde\Http\Client;
+
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -38,7 +41,7 @@ class Options
         'redirects' => 5,
         'timeout' => 5,
         'userAgent' => 'Horde\Http H6',
-        'verifyPeer' => true
+        'verifyPeer' => true,
     ];
 
     public function __construct(iterable $param = [])

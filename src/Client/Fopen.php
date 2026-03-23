@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2007-2021 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -122,13 +122,13 @@ class Fopen implements ClientInterface
         $opts['ssl']['allow_self_signed'] = true;
 
         $context = stream_context_create($opts);
-        set_error_handler(array($this, 'errorHandler'), E_WARNING | E_NOTICE);
+        set_error_handler([$this, 'errorHandler'], E_WARNING | E_NOTICE);
         $streamResource = fopen($uri, 'rb', false, $context);
         restore_error_handler();
         if (!$streamResource) {
             if (
-                isset($this->errors[0]['message']) &&
-                preg_match('/HTTP\/(\d+\.\d+) (\d{3}) (.*)$/', $this->errors[0]['message'], $matches)
+                isset($this->errors[0]['message'])
+                && preg_match('/HTTP\/(\d+\.\d+) (\d{3}) (.*)$/', $this->errors[0]['message'], $matches)
             ) {
                 // Create a Response for the HTTP error code
                 return $this->responseFactory->createResponse($matches[0]);
@@ -138,7 +138,7 @@ class Fopen implements ClientInterface
         }
 
         $meta = stream_get_meta_data($streamResource);
-        $headers = isset($meta['wrapper_data']) ? $meta['wrapper_data'] : [];
+        $headers = $meta['wrapper_data'] ?? [];
 
         //return new Response
         $headerList = $this->parseHeaders($headers);

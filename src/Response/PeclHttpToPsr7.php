@@ -1,9 +1,11 @@
 <?php
+
 namespace Horde\Http\Response;
-use \Psr\Http\Message\ResponseFactoryInterface;
-use \Psr\Http\Message\ResponseInterface;
-use \Psr\Http\Message\StreamFactoryInterface;
-use \Psr\Http\Message\StreamInterface;
+
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\StreamInterface;
 use http\Client\Response as PeclHttpResponse;
 use Horde\Http\ClientException;
 
@@ -15,14 +17,14 @@ trait PeclHttpToPsr7
 {
     /**
      * Convert to PSR-7 format
-     * 
+     *
      * @param PeclHttpResponse $httpResponse The httpClient response
-     * 
+     *
      * @return ResponseInterface The PSR-7 equivalent
      */
-    private function convertPeclHttpResponseToPsr7(PeclHttpResponse $httpResponse
-    ): ResponseInterface
-    {
+    private function convertPeclHttpResponseToPsr7(
+        PeclHttpResponse $httpResponse
+    ): ResponseInterface {
         try {
             $info = $httpResponse->getTransferInfo();
         } catch (\http\Exception $e) {

@@ -1,12 +1,20 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Horde\Http;
+
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UriInterface;
+use InvalidArgumentException;
+use RuntimeException;
+
+use function fwrite;
+
 /**
  * PSR-17 StreamFactory implementation to create PSR-7 Stream objects
- * 
+ *
  * Any construction arguments introduced later SHOULD be optional.
  */
 class StreamFactory implements StreamFactoryInterface
@@ -24,7 +32,7 @@ class StreamFactory implements StreamFactoryInterface
     {
         // TODO: catch any error conditions
         $resource = fopen('php://temp', 'rw+');
-        \fwrite($resource, $content);
+        fwrite($resource, $content);
         return new Stream($resource);
     }
 
@@ -40,8 +48,8 @@ class StreamFactory implements StreamFactoryInterface
      * @param string $mode Mode with which to open the underlying filename/stream.
      *
      * @return StreamInterface
-     * @throws \RuntimeException If the file cannot be opened.
-     * @throws \InvalidArgumentException If the mode is invalid.
+     * @throws RuntimeException If the file cannot be opened.
+     * @throws InvalidArgumentException If the mode is invalid.
      */
     public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
     {
@@ -50,7 +58,7 @@ class StreamFactory implements StreamFactoryInterface
         return new Stream($resource);
 
     }
-    
+
     /**
      * Create a new stream from an existing resource.
      *

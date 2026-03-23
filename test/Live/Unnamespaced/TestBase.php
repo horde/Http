@@ -1,17 +1,20 @@
 <?php
+
 /**
- * Copyright 2014-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2014-2026 Horde LLC (http://www.horde.org/)
  *
  * @category   Horde
  * @package    Http
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/bsd
  */
-namespace Horde\Http\Test\Unnamespaced;
+
+namespace Horde\Http\Test\Live\Unnamespaced;
+
 use Horde_Test_Case;
-use \Horde_Http_Client;
-use \Horde_Http_Exception;
-use \Horde_Http;
+use Horde_Http_Client;
+use Horde_Http_Exception;
+use Horde_Http;
 
 /**
  * Unit test base.
@@ -48,7 +51,7 @@ class TestBase extends Horde_Test_Case
     public function testRequest()
     {
         $client = new Horde_Http_Client(
-            array('request' => new self::$_requestClass())
+            ['request' => new self::$_requestClass()]
         );
         $response = $client->get('http://' . $this->_server);
 
@@ -77,26 +80,23 @@ class TestBase extends Horde_Test_Case
     public function testThrowsOnBadUri()
     {
         $client = new Horde_Http_Client([
-            'request' => new self::$_requestClass()
+            'request' => new self::$_requestClass(),
         ]);
         $this->expectException(Horde_Http_Exception::class);
         $client->get('http://doesntexist/');
     }
 
-    /**
-     * @expectedException Horde_Http_Exception
-     */
     public function testThrowsOnInvalidProxyType()
     {
         $client = new Horde_Http_Client(
-            array(
+            [
                 'request' => new self::$_requestClass(
-                    array(
+                    [
                         'proxyServer' => 'localhost',
-                        'proxyType' => Horde_Http::PROXY_SOCKS4
-                    )
-                )
-            )
+                        'proxyType' => Horde_Http::PROXY_SOCKS4,
+                    ]
+                ),
+            ]
         );
         $this->expectException(Horde_Http_Exception::class);
         $client->get('http://www.example.com/');
@@ -106,7 +106,7 @@ class TestBase extends Horde_Test_Case
     {
         $this->_skipMissingConfig();
         $client = new Horde_Http_Client(
-            array('request' => new self::$_requestClass())
+            ['request' => new self::$_requestClass()]
         );
         $response = $client->get('http://' . $this->_server . '/doesntexist');
         $this->assertEquals(404, $response->code);
@@ -116,7 +116,7 @@ class TestBase extends Horde_Test_Case
     {
         $this->_skipMissingConfig();
         $client = new Horde_Http_Client(
-            array('request' => new self::$_requestClass())
+            ['request' => new self::$_requestClass()]
         );
         $response = $client->get('http://' . $this->_server . '/doesntexist');
         $content = $response->getBody();

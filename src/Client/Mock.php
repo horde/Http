@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2021 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -13,7 +14,9 @@
  * @package  Http
  */
 declare(strict_types=1);
+
 namespace Horde\Http\Client;
+
 use OutOfBoundsException;
 use Horde\Http\Response;
 use Horde\Http\ResponseFactory;
@@ -95,14 +98,16 @@ class Mock implements ClientInterface
      * @return ResponseInterface The response.
      */
     public function addResponse(
-        $body, string|int $code = 200, string $uri = '', array $headers = []
-    ): ResponseInterface
-    {
+        $body,
+        string|int $code = 200,
+        string $uri = '',
+        array $headers = []
+    ): ResponseInterface {
         // TODO: What about the uri?
         if ($body instanceof StreamInterface) {
             $stream = clone($body);
         } elseif (is_string($body)) {
-            $stream = $this->streamFactory->createStream($body);            
+            $stream = $this->streamFactory->createStream($body);
         } else {
             $stream = $this->streamFactory->createStreamFromResource($body);
         }
@@ -111,7 +116,7 @@ class Mock implements ClientInterface
             $response = $response->withAddedHeader($name, $header);
         }
         $this->responses[] = $response;
-        return $response; 
+        return $response;
     }
 
     /**

@@ -1,10 +1,15 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Horde\Http;
 
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
+use InvalidArgumentException;
+
+use const UPLOAD_ERR_OK;
 
 class UploadedFileFactory implements UploadedFileFactoryInterface
 {
@@ -24,15 +29,15 @@ class UploadedFileFactory implements UploadedFileFactoryInterface
      * @param string $clientFilename The filename as provided by the client, if any.
      * @param string $clientMediaType The media type as provided by the client, if any.
      *
-     * @throws \InvalidArgumentException If the file resource is not readable.
+     * @throws InvalidArgumentException If the file resource is not readable.
      */
     public function createUploadedFile(
         StreamInterface $stream,
         ?int $size = null,
-        int $error = \UPLOAD_ERR_OK,
+        int $error = UPLOAD_ERR_OK,
         ?string $clientFilename = null,
         ?string $clientMediaType = null
     ): UploadedFileInterface {
-        return new UploadedFile($stream, new StreamFactory(), $clientFilename, $clientMediaType, 0, null);        
+        return new UploadedFile($stream, new StreamFactory(), $clientFilename, $clientMediaType, 0, null);
     }
 }

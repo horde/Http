@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -11,8 +12,11 @@
  * @package  Http
  */
 declare(strict_types=1);
+
 namespace Horde\Http;
-use \Horde_Exception_Wrapped;
+
+use Horde_Exception_Wrapped;
+
 /**
  * Base exception for the Horde_Http library.
  *
@@ -22,6 +26,4 @@ use \Horde_Exception_Wrapped;
  * @license   http://www.horde.org/licenses/bsd BSD
  * @package   Http
  */
-class Exception extends Horde_Exception_Wrapped
-{
-}
+class Exception extends Horde_Exception_Wrapped {}

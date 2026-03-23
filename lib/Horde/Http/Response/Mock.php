@@ -23,6 +23,13 @@
 class Horde_Http_Response_Mock extends Horde_Http_Response_Base
 {
     /**
+     * Response stream.
+     *
+     * @var resource
+     */
+    protected $_stream;
+
+    /**
      * Constructor
      */
     public function __construct($uri, $stream, $headers = array())

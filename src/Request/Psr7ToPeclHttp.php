@@ -1,7 +1,10 @@
 <?php
+
 namespace Horde\Http\Request;
-use \Psr\Http\Message\RequestInterface as Psr7Request;
-use \Psr\Http\Message\StreamInterface as Psr7Stream;
+
+use Psr\Http\Message\RequestInterface as Psr7Request;
+use Psr\Http\Message\StreamInterface as Psr7Stream;
+
 /**
  * Convert a PSR-7 request message to a pecl/Http native message
  * Split off from the PeclHttp Client implementation
@@ -10,9 +13,9 @@ trait Psr7ToPeclHttp
 {
     /**
      * Convert to native format
-     * 
+     *
      * @param Psr7Request $request The PSR request to convert
-     * 
+     *
      * @return \http\Client\Request
      */
     private function convertPsr7RequestToPeclHttp(Psr7Request $request): \http\Client\Request
@@ -32,7 +35,7 @@ trait Psr7ToPeclHttp
             $extHttpReqHeaders[$name] = $request->getHeaderLine($name);
         }
         $extHttpRequest = new \http\Client\Request(
-            $request->getMethod(), 
+            $request->getMethod(),
             (string) $request->getUri(),
             $extHttpReqHeaders,
             $extHttpReqBody

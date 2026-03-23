@@ -1,6 +1,6 @@
 <?php
 
-namespace Horde\Http\Test;
+namespace Horde\Http\Test\Unit;
 
 use Phpunit\Framework\TestCase;
 use Horde\Http\RequestFactory;
@@ -14,8 +14,13 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 
+/**
+ * @coversNothing
+ */
 class ServerRequestTest extends TestCase
 {
+    protected RequestFactory $requestFactory;
+
     public function setUp(): void
     {
         $this->requestFactory = new RequestFactory();
@@ -65,7 +70,7 @@ class ServerRequestTest extends TestCase
     public function testHeaderThrowsExceptionWhen0a0d00InValue()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectDeprecationMessageMatches('/0x0a, 0x0d, 0x00$/');
+        $this->expectExceptionMessageMatches('/0x0a, 0x0d, 0x00$/');
         $headerName = 'Testheadersssbla';
         $headerValue = 'Trestvalue';
         $headerValue .=  chr(0x0A);
@@ -79,7 +84,7 @@ class ServerRequestTest extends TestCase
     public function testHeaderThrowsExceptionWhenAsciiCharactersTill32InName()
     {   // This request should be refused due to invalid ascii characters in $headerName
         $this->expectException(InvalidArgumentException::class);
-        $this->expectDeprecationMessageMatches('/0x01, 0x05, 0x0a, 0x00, 0x20$/');
+        $this->expectExceptionMessageMatches('/0x01, 0x05, 0x0a, 0x00, 0x20$/');
         $headerName = 'TestHeader';
         $headerName =  chr(0x01);
         $headerName .=  chr(0x05);
@@ -361,7 +366,7 @@ class ServerRequestTest extends TestCase
     public function testWithBodyCreatesWithNewBody()
     {
         $request = new ServerRequest('GET', '/foo', [], 'testbody');
-        $stream = $this->createMock(StreamInterface::class);
+        $stream = $this->createStub(StreamInterface::class);
         $request = $request->withBody($stream);
         $body = $request->getBody();
         $this->assertEquals($stream, $body);
@@ -370,7 +375,7 @@ class ServerRequestTest extends TestCase
     public function testWithBodyPreservesMessage()
     {
         $request = new ServerRequest('GET', '/foo', [], 'testbody');
-        $newRequest = $request->withBody($this->createMock(StreamInterface::class));
+        $newRequest = $request->withBody($this->createStub(StreamInterface::class));
         $body = $request->getBody();
         $this->assertEquals('testbody', (string) $body);
     }
@@ -442,7 +447,7 @@ class ServerRequestTest extends TestCase
     public function testWithUriCreatesWithNewUri()
     {
         $path = '/new/path';
-        $uri = $this->createMock(Uri::class);
+        $uri = $this->createStub(Uri::class);
         $uri->method('getPath')->willReturn($path);
         $request = new ServerRequest('GET', '/foo');
         $request = $request->withUri($uri);
@@ -452,7 +457,7 @@ class ServerRequestTest extends TestCase
     public function testWithUriPreservesMessage()
     {
         $path = '/foo';
-        $uri = $this->createMock(Uri::class);
+        $uri = $this->createStub(Uri::class);
         $uri->method('getPath')->willReturn('/new/path');
         $request = new ServerRequest('GET', $path);
         $newRequest = $request->withUri($uri);
@@ -463,7 +468,7 @@ class ServerRequestTest extends TestCase
     {
         $path = '/foo';
         $hostValue = 'custom.host.value';
-        $uri = $this->createMock(Uri::class);
+        $uri = $this->createStub(Uri::class);
         $uri->method('getHost')->willReturn('localhost');
         $request = new ServerRequest('GET', $path, ['host' => $hostValue]);
         $request = $request->withUri($uri);
@@ -474,7 +479,7 @@ class ServerRequestTest extends TestCase
     {
         $path = '/foo';
         $hostValue = 'custom.host.value';
-        $uri = $this->createMock(Uri::class);
+        $uri = $this->createStub(Uri::class);
         $uri->method('getHost')->willReturn('localhost');
         $request = new ServerRequest('GET', $path, ['host' => $hostValue]);
         $request = $request->withUri($uri, true);
@@ -487,7 +492,7 @@ class ServerRequestTest extends TestCase
     {
         $host = 'https://www.horde.org/';
         $port = 6000;
-        $uri = $this->createMock(Uri::class);
+        $uri = $this->createStub(Uri::class);
         $uri->method('getHost')->willReturn($host);
         $uri->method('getPort')->willReturn($port);
         $request = new ServerRequest('GET', $uri);
@@ -497,7 +502,7 @@ class ServerRequestTest extends TestCase
     public function testServerRequestSetsHostHeaderNoPort()
     {
         $host = 'https://www.horde.org/';
-        $uri = $this->createMock(Uri::class);
+        $uri = $this->createStub(Uri::class);
         $uri->method('getHost')->willReturn($host);
         $request = new ServerRequest('GET', $uri);
         $this->assertEquals(["$host"], $request->getHeader('Host'));
@@ -544,7 +549,7 @@ class ServerRequestTest extends TestCase
 
     public function testWithUploadedFilesCreatesWithNewUploadedFiles()
     {
-        $files = [$this->createMock(UploadedFileInterface::class)];
+        $files = [$this->createStub(UploadedFileInterface::class)];
         $request = new ServerRequest('GET', '/foo');
         $request = $request->withUploadedFiles($files);
         $this->assertEquals($files, $request->getUploadedFiles());
@@ -552,7 +557,7 @@ class ServerRequestTest extends TestCase
 
     public function testWithUploadedFilesPreservesMessage()
     {
-        $files = [$this->createMock(UploadedFileInterface::class)];
+        $files = [$this->createStub(UploadedFileInterface::class)];
         $request = new ServerRequest('GET', '/foo');
         $newRequest = $request->withUploadedFiles($files);
         $this->assertEquals([], $request->getUploadedFiles());

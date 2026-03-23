@@ -1,22 +1,23 @@
 <?php
 
-namespace Horde\Http\Test;
+namespace Horde\Http\Test\Unit;
 
 use Phpunit\Framework\TestCase;
 use Horde\Http\Response;
 use Psr\Http\Message\ResponseInterface;
 use InvalidArgumentException;
 
+/**
+ * @coversNothing
+ */
 class ResponseTest extends TestCase
 {
-    public function setUp(): void
-    {
-    }
+    public function setUp(): void {}
 
     public function testStoreHeaderWithWrongHeaderValues()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectDeprecationMessageMatches('/0x00, 0x0d, 0x0a$/');
+        $this->expectExceptionMessageMatches('/0x00, 0x0d, 0x0a$/');
         $headerName = 'TestHeader';
         $headerValue =  chr(0x00);
         $headerValue .=  chr(0x0D);
@@ -30,7 +31,7 @@ class ResponseTest extends TestCase
     public function testHeaderThrowsExceptionWithWrongHeaderNames()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectDeprecationMessageMatches('/0x01, 0x05, 0x0a, 0x00, 0x20$/');
+        $this->expectExceptionMessageMatches('/0x01, 0x05, 0x0a, 0x00, 0x20$/');
         $headerName = 'TestHeader';
         $headerName =  chr(0x01);
         $headerName .=  chr(0x05);
