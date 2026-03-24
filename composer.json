@@ -16,7 +16,7 @@
             "role": "lead"
         }
     ],
-    "time": "2026-03-23",
+    "time": "2026-03-24",
     "repositories": [],
     "require": {
         "php": "^7.4 || ^8",
@@ -27,7 +27,6 @@
         "psr/http-client": "^1.0.3"
     },
     "require-dev": {
-        "horde/test": "^3",
         "horde/url": "^3"
     },
     "suggest": {
