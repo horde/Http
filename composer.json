@@ -20,14 +20,14 @@
     "repositories": [],
     "require": {
         "php": "^7.4 || ^8",
-        "horde/exception": "^3",
-        "horde/support": "^3",
+        "horde/exception": "^3 || dev-FRAMEWORK_6_0",
+        "horde/support": "^3 || dev-FRAMEWORK_6_0",
         "psr/http-message": "^2",
         "psr/http-factory": "^1.0.2",
         "psr/http-client": "^1.0.3"
     },
     "require-dev": {
-        "horde/url": "^3"
+        "horde/url": "^3 || dev-FRAMEWORK_6_0"
     },
     "suggest": {
         "ext-curl": "*",
@@ -56,5 +56,10 @@
         "psr/http-message-implementation": "^2",
         "psr/http-factory-implementation": "^1.0.2",
         "psr/http-client-implementation": "^1.0.3"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-FRAMEWORK_6_0": "3.x-dev"
+        }
     }
 }
