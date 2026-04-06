@@ -1,4 +1,16 @@
 ---
+3.0.0-beta5:
+  api: 3.0.0-beta5
+  state:
+    release: beta
+    api: beta
+  date: 2026-04-06
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: |-
+    chore: remove ci bootstrap script - it should not be part of the archive
+    chore: It was good while it lasted.
 3.0.0-beta4:
   api: 3.0.0-beta4
   state:
