@@ -8,7 +8,7 @@
  *
  * @author   Chuck Hagenbuch <chuck@horde.org>
  * @author   Gunnar Wrobel <wrobel@pardus.de>
- * @author   Ralf lang <lang@b1-systems.de>
+ * @author   Ralf lang <ralf.lang@ralf-lang.de>
  * @category Horde
  * @license  http://www.horde.org/licenses/bsd BSD
  * @package  Http
