@@ -73,7 +73,7 @@ trait RequestImplementation
      */
     public function withRequestTarget($requestTarget): RequestInterface
     {
-        $pathAndQuery = explode('?', $requestTarget, 2);
+        $pathAndQuery = explode('?', (string) $requestTarget, 2);
         $path = $pathAndQuery[0];
         $uri = $this->uri->withPath($path);
         if (count($pathAndQuery) === 2) {
