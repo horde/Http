@@ -163,6 +163,18 @@
     uri: http://www.horde.org/licenses/bsd
   notes: |
     Original version string was 3.0.0alpha1
+3.0.0-RC1:
+  api: 3.0.0-RC1
+  state:
+    release: RC
+    api: RC
+  date: 2026-05-19
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: |-
+    docs: Add upgrading guide
+    fix: cast $requestTarget to string before explode() for PHP 8.0+
 2.1.7:
   api: 1.3.0
   state:
