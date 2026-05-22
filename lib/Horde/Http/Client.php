@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -99,7 +100,7 @@ class Horde_Http_Client
      *                    constructor. See the class properties for available
      *                    settings.
      */
-    public function __construct($args = array())
+    public function __construct($args = [])
     {
         // Set or create request object
         if (isset($args['request'])) {
@@ -124,7 +125,7 @@ class Horde_Http_Client
      * @throws Horde_Http_Exception
      * @return Horde_Http_Response_Base
      */
-    public function get($uri = null, $headers = array())
+    public function get($uri = null, $headers = [])
     {
         return $this->request('GET', $uri, null, $headers);
     }
@@ -139,7 +140,7 @@ class Horde_Http_Client
      * @throws Horde_Http_Exception
      * @return Horde_Http_Response_Base
      */
-    public function post($uri = null, $data = null, $headers = array())
+    public function post($uri = null, $data = null, $headers = [])
     {
         return $this->request('POST', $uri, $data, $headers);
     }
@@ -154,11 +155,11 @@ class Horde_Http_Client
      * @throws Horde_Http_Exception
      * @return Horde_Http_Response_Base
      */
-    public function put($uri = null, $data = null, $headers = array())
+    public function put($uri = null, $data = null, $headers = [])
     {
         if ($this->_httpMethodOverride) {
             $headers = array_merge(
-                array('X-HTTP-Method-Override' => 'PUT'),
+                ['X-HTTP-Method-Override' => 'PUT'],
                 $headers
             );
             return $this->post($uri, $data, $headers);
@@ -176,11 +177,11 @@ class Horde_Http_Client
      * @throws Horde_Http_Exception
      * @return Horde_Http_Response_Base
      */
-    public function delete($uri = null, $headers = array())
+    public function delete($uri = null, $headers = [])
     {
         if ($this->_httpMethodOverride) {
             $headers = array_merge(
-                array('X-HTTP-Method-Override' => 'DELETE'),
+                ['X-HTTP-Method-Override' => 'DELETE'],
                 $headers
             );
             return $this->post($uri, null, $headers);
@@ -198,7 +199,7 @@ class Horde_Http_Client
      * @throws Horde_Http_Exception
      * @return Horde_Http_Response_Base
      */
-    public function head($uri = null, $headers = array())
+    public function head($uri = null, $headers = [])
     {
         return $this->request('HEAD', $uri, null, $headers);
     }
@@ -220,9 +221,11 @@ class Horde_Http_Client
      * @return Horde_Http_Response_Base
      */
     public function request(
-        $method, $uri = null, $data = null, $headers = array()
-    )
-    {
+        $method,
+        $uri = null,
+        $data = null,
+        $headers = []
+    ) {
         if ($method !== null) {
             $this->request->method = $method;
         }
@@ -251,7 +254,7 @@ class Horde_Http_Client
      */
     public function __get($name)
     {
-        return isset($this->{'_' . $name}) ? $this->{'_' . $name} : null;
+        return $this->{'_' . $name} ?? null;
     }
 
     /**
@@ -271,7 +274,7 @@ class Horde_Http_Client
             }
         }
 
-        list($object, $objectkey) = explode('.', $name, 2);
+        [$object, $objectkey] = explode('.', $name, 2);
         if ($object == 'request') {
             $this->$object->$objectkey = $value;
             return true;

@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -29,7 +30,7 @@ class Horde_Http_Request_Mock extends Horde_Http_Request_Base
      *
      * @var array
      */
-    protected $_responses = array();
+    protected $_responses = [];
 
     /**
      * Send this HTTP request
@@ -56,7 +57,7 @@ class Horde_Http_Request_Mock extends Horde_Http_Request_Base
      */
     public function setResponse(Horde_Http_Response_Base $response)
     {
-        $this->_responses = array($response);
+        $this->_responses = [$response];
     }
 
     /**
@@ -74,10 +75,10 @@ class Horde_Http_Request_Mock extends Horde_Http_Request_Base
             }
             if (is_array($response)) {
                 $this->addResponse(
-                    isset($response['body']) ? $response['body'] : '',
-                    isset($response['code']) ? $response['code'] : 200,
-                    isset($response['uri']) ? $response['uri'] : '',
-                    isset($response['headers']) ? $response['headers'] : array()
+                    $response['body'] ?? '',
+                    $response['code'] ?? 200,
+                    $response['uri'] ?? '',
+                    $response['headers'] ?? []
                 );
             }
         }
@@ -97,13 +98,17 @@ class Horde_Http_Request_Mock extends Horde_Http_Request_Base
      * @return Horde_Http_Response_Mock The response.
      */
     public function addResponse(
-        $body, $code = 200, $uri = '', $headers = array()
-    )
-    {
+        $body,
+        $code = 200,
+        $uri = '',
+        $headers = []
+    ) {
         if (is_string($body)) {
             $stream = new Horde_Support_StringStream($body);
             $response = new Horde_Http_Response_Mock(
-                $uri, $stream->fopen(), $headers
+                $uri,
+                $stream->fopen(),
+                $headers
             );
         } else {
             $response = new Horde_Http_Response_Mock($uri, $body, $headers);

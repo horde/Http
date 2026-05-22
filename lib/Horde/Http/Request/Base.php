@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -49,29 +50,29 @@ abstract class Horde_Http_Request_Base
      * Request headers
      * @var array
      */
-    protected $_headers = array();
+    protected $_headers = [];
 
     /**
      * @var array
      */
-    protected $_options = array();
+    protected $_options = [];
 
     /**
      * Constructor
      */
-    public function __construct($options = array())
+    public function __construct($options = [])
     {
         $this->setOptions($options);
     }
 
-    public function setOptions($options = array())
+    public function setOptions($options = [])
     {
         $this->_options = array_merge($this->getDefaultOptions(), $options);
     }
 
     public function getDefaultOptions()
     {
-        return array(
+        return [
             'uri' => null,
             'method' => 'GET',
             'data' => null,
@@ -88,7 +89,7 @@ abstract class Horde_Http_Request_Base
             'timeout' => 5,
             'userAgent' => str_replace(' @' . 'version@', '', 'Horde_Http @version@'),
             'verifyPeer' => true,
-        );
+        ];
     }
 
     /**
@@ -108,11 +109,11 @@ abstract class Horde_Http_Request_Base
     public function __get($name)
     {
         switch ($name) {
-        case 'headers':
-            return $this->_headers;
+            case 'headers':
+                return $this->_headers;
         }
 
-        return isset($this->_options[$name]) ? $this->_options[$name] : null;
+        return $this->_options[$name] ?? null;
     }
 
     /**
@@ -124,9 +125,9 @@ abstract class Horde_Http_Request_Base
     public function __set($name, $value)
     {
         switch ($name) {
-        case 'headers':
-            $this->setHeaders($value);
-            break;
+            case 'headers':
+                $this->setHeaders($value);
+                break;
         }
 
         $this->_options[$name] = $value;
@@ -141,7 +142,7 @@ abstract class Horde_Http_Request_Base
     public function setHeaders($headers, $value = null)
     {
         if (!is_array($headers)) {
-            $headers = array($headers => $value);
+            $headers = [$headers => $value];
         }
 
         foreach ($headers as $header => $value) {
@@ -157,6 +158,6 @@ abstract class Horde_Http_Request_Base
      */
     public function getHeader($header)
     {
-        return isset($this->_headers[$header]) ? $this->_headers[$header] : null;
+        return $this->_headers[$header] ?? null;
     }
 }

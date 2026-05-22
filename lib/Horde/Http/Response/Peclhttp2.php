@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -25,7 +26,7 @@ class Horde_Http_Response_Peclhttp2 extends Horde_Http_Response_Base
     /**
      * HttpMessage object.
      *
-     * @var \http\Client\Response
+     * @var http\Client\Response
      */
     protected $_response;
 
@@ -33,18 +34,18 @@ class Horde_Http_Response_Peclhttp2 extends Horde_Http_Response_Base
      * Constructor.
      *
      * @param string                $uri
-     * @param \http\Client\Response $response
+     * @param http\Client\Response $response
      */
-    public function __construct($uri, \http\Client\Response $response)
+    public function __construct($uri, http\Client\Response $response)
     {
         try {
             $info = $response->getTransferInfo();
-        } catch (\http\Exception $e) {
+        } catch (http\Exception $e) {
             throw new Horde_Http_Exception($e);
         }
         try {
             $this->uri = $info->effective_url;
-        } catch (\http\Exception\RuntimeException $e) {
+        } catch (http\Exception\RuntimeException $e) {
             $this->uri = $uri;
         }
 

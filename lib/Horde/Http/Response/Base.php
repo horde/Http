@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -20,6 +21,7 @@
  * @license   http://www.horde.org/licenses/bsd BSD
  * @package   Http
  */
+#[AllowDynamicProperties]
 abstract class Horde_Http_Response_Base
 {
     /**
@@ -81,7 +83,7 @@ abstract class Horde_Http_Response_Base
             // start over.
             if (preg_match('/^HTTP\/(\d.\d) (\d{3})/', $headerLine, $httpMatches)) {
                 $this->httpVersion = $httpMatches[1];
-                $this->code = (int)$httpMatches[2];
+                $this->code = (int) $httpMatches[2];
                 $this->_headers = new Horde_Support_CaseInsensitiveArray();
                 $lastHeader = null;
             }
@@ -96,7 +98,7 @@ abstract class Horde_Http_Response_Base
 
                 if ($tmp = $this->_headers[$headerName]) {
                     if (!is_array($tmp)) {
-                        $tmp = array($tmp);
+                        $tmp = [$tmp];
                     }
                     $tmp[] = $headerValue;
                     $headerValue = $tmp;
@@ -104,8 +106,8 @@ abstract class Horde_Http_Response_Base
 
                 $this->_headers[$headerName] = $headerValue;
                 $lastHeader = $headerName;
-            } elseif (preg_match("|^\s+(.+)$|", $headerLine, $m) &&
-                      !is_null($lastHeader)) {
+            } elseif (preg_match("|^\s+(.+)$|", $headerLine, $m)
+                      && !is_null($lastHeader)) {
                 if (is_array($this->_headers[$lastHeader])) {
                     $tmp = $this->_headers[$lastHeader];
                     end($tmp);

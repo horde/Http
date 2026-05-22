@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -25,16 +26,16 @@ class Horde_Http
     /**
      * Authentication schemes
      */
-    const AUTH_ANY = 'ANY';
-    const AUTH_BASIC = 'BASIC';
-    const AUTH_DIGEST = 'DIGEST';
-    const AUTH_NTLM = 'NTLM';
-    const AUTH_GSSNEGOTIATE = 'GSSNEGOTIATE';
+    public const AUTH_ANY = 'ANY';
+    public const AUTH_BASIC = 'BASIC';
+    public const AUTH_DIGEST = 'DIGEST';
+    public const AUTH_NTLM = 'NTLM';
+    public const AUTH_GSSNEGOTIATE = 'GSSNEGOTIATE';
 
     /**
      * Proxy types
      */
-    const PROXY_HTTP = 0;
-    const PROXY_SOCKS4 = 1;
-    const PROXY_SOCKS5 = 2;
+    public const PROXY_HTTP = 0;
+    public const PROXY_SOCKS4 = 1;
+    public const PROXY_SOCKS5 = 2;
 }

@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -28,20 +29,20 @@ class Horde_Http_Request_Curl extends Horde_Http_Request_Base
      *
      * @var array
      */
-    protected $_httpAuthSchemes = array(
+    protected $_httpAuthSchemes = [
         Horde_Http::AUTH_ANY => CURLAUTH_ANY,
         Horde_Http::AUTH_BASIC => CURLAUTH_BASIC,
         Horde_Http::AUTH_DIGEST => CURLAUTH_DIGEST,
         Horde_Http::AUTH_GSSNEGOTIATE => CURLAUTH_GSSNEGOTIATE,
         Horde_Http::AUTH_NTLM => CURLAUTH_NTLM,
-    );
+    ];
 
     /**
      * Constructor
      *
      * @throws Horde_Http_Exception
      */
-    public function __construct($args = array())
+    public function __construct($args = [])
     {
         if (!extension_loaded('curl')) {
             throw new Horde_Http_Exception('The curl extension is not installed. See http://php.net/curl.installation');
@@ -59,7 +60,7 @@ class Horde_Http_Request_Curl extends Horde_Http_Request_Base
     public function send()
     {
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, (string)$this->uri);
+        curl_setopt($curl, CURLOPT_URL, (string) $this->uri);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->method);
@@ -102,7 +103,7 @@ class Horde_Http_Request_Curl extends Horde_Http_Request_Base
             }
             if ($this->proxyType == Horde_Http::PROXY_SOCKS5) {
                 curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-            } else if ($this->proxyType != Horde_Http::PROXY_HTTP) {
+            } elseif ($this->proxyType != Horde_Http::PROXY_HTTP) {
                 throw new Horde_Http_Exception(sprintf('Proxy type %s not supported by this request type!', $this->proxyType));
             }
         }
@@ -114,7 +115,7 @@ class Horde_Http_Request_Curl extends Horde_Http_Request_Base
         }
 
         // Concatenate the headers
-        $hdr = array();
+        $hdr = [];
         $headers = $this->headers;
         if (empty($headers['Expect'])) {
             $headers['Expect'] = '';
@@ -130,7 +131,7 @@ class Horde_Http_Request_Curl extends Horde_Http_Request_Base
             throw new Horde_Http_Exception(curl_error($curl), curl_errno($curl));
         }
         $info = curl_getinfo($curl);
-        return new Horde_Http_Response_Curl((string)$this->uri, $result, $info);
+        return new Horde_Http_Response_Curl((string) $this->uri, $result, $info);
     }
 
     /**

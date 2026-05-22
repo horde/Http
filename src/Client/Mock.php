@@ -54,8 +54,7 @@ class Mock implements ClientInterface
     {
         $this->streamFactory = $streamFactory ?? new StreamFactory();
         $this->responseFactory = $responseFactory ?? new ResponseFactory();
-        $this->options = $options;
-
+        $this->options = $options ?? new Options();
     }
 
     /**
