@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -28,20 +29,20 @@ class Horde_Http_Request_Peclhttp extends Horde_Http_Request_PeclhttpBase
      *
      * @var array
      */
-    protected $_httpAuthSchemes = array(
+    protected $_httpAuthSchemes = [
         Horde_Http::AUTH_ANY => HTTP_AUTH_ANY,
         Horde_Http::AUTH_BASIC => HTTP_AUTH_BASIC,
         Horde_Http::AUTH_DIGEST => HTTP_AUTH_DIGEST,
         Horde_Http::AUTH_GSSNEGOTIATE => HTTP_AUTH_GSSNEG,
         Horde_Http::AUTH_NTLM => HTTP_AUTH_NTLM,
-    );
+    ];
 
     /**
      * Constructor
      *
      * @throws Horde_Http_Exception
      */
-    public function __construct($args = array())
+    public function __construct($args = [])
     {
         if (!class_exists('HttpRequest', false)) {
             throw new Horde_Http_Exception('The pecl_http extension is not installed. See http://php.net/http.install');
@@ -62,7 +63,7 @@ class Horde_Http_Request_Peclhttp extends Horde_Http_Request_PeclhttpBase
             throw new Horde_Http_Exception('Method ' . $this->method . ' not supported.');
         }
 
-        $httpRequest = new HttpRequest((string)$this->uri, constant('HTTP_METH_' . $this->method));
+        $httpRequest = new HttpRequest((string) $this->uri, constant('HTTP_METH_' . $this->method));
 
         $data = $this->data;
         if (is_array($data)) {
@@ -80,13 +81,13 @@ class Horde_Http_Request_Peclhttp extends Horde_Http_Request_PeclhttpBase
         try {
             $httpResponse = $httpRequest->send();
         } catch (HttpException $e) {
-            if (isset($e->innerException)){
+            if (isset($e->innerException)) {
                 throw new Horde_Http_Exception($e->innerException);
             } else {
                 throw new Horde_Http_Exception($e);
             }
         }
 
-        return new Horde_Http_Response_Peclhttp((string)$this->uri, $httpResponse);
+        return new Horde_Http_Response_Peclhttp((string) $this->uri, $httpResponse);
     }
 }

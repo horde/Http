@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -28,14 +29,14 @@ abstract class Horde_Http_Request_PeclhttpBase extends Horde_Http_Request_Base
      *
      * @var array
      */
-    protected $_httpAuthSchemes = array();
+    protected $_httpAuthSchemes = [];
 
     /**
      * Map of proxy types from Horde_Http to implementation specific constants.
      *
      * @var array
      */
-    protected $_proxyTypes = array();
+    protected $_proxyTypes = [];
 
     /**
      * Translates a Horde_Http::AUTH_* constant to implementation specific
@@ -79,16 +80,16 @@ abstract class Horde_Http_Request_PeclhttpBase extends Horde_Http_Request_Base
     protected function _httpOptions()
     {
         // Set options
-        $httpOptions = array(
+        $httpOptions = [
             'headers' => $this->headers,
-            'redirect' => (int)$this->redirects,
-            'ssl' => array(
+            'redirect' => (int) $this->redirects,
+            'ssl' => [
                 'verifypeer' => $this->verifyPeer,
-                'verifyhost' => $this->verifyPeer
-            ),
+                'verifyhost' => $this->verifyPeer,
+            ],
             'timeout' => $this->timeout,
-            'useragent' => $this->userAgent
-        );
+            'useragent' => $this->userAgent,
+        ];
 
         // Proxy settings
         if ($this->proxyServer) {
@@ -102,7 +103,7 @@ abstract class Horde_Http_Request_PeclhttpBase extends Horde_Http_Request_Base
             }
             if ($this->proxyType == Horde_Http::PROXY_SOCKS4 || $this->proxyType == Horde_Http::PROXY_SOCKS5) {
                 $httpOptions['proxytype'] = $this->_proxyType();
-            } else if ($this->proxyType != Horde_Http::PROXY_HTTP) {
+            } elseif ($this->proxyType != Horde_Http::PROXY_HTTP) {
                 throw new Horde_Http_Exception(sprintf('Proxy type %s not supported by this request type!', $this->proxyType));
             }
         }

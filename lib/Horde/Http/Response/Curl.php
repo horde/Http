@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -27,7 +28,7 @@ class Horde_Http_Response_Curl extends Horde_Http_Response_Base
      *
      * @var array
      */
-    protected $_info = array();
+    protected $_info = [];
 
     /**
      * Response body.

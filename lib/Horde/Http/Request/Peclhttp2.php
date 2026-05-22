@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2007-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2007-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (BSD). If you
  * did not receive this file, see http://www.horde.org/licenses/bsd.
@@ -28,29 +29,29 @@ class Horde_Http_Request_Peclhttp2 extends Horde_Http_Request_PeclhttpBase
      *
      * @var array
      */
-    protected $_httpAuthSchemes = array(
+    protected $_httpAuthSchemes = [
         Horde_Http::AUTH_ANY => \http\Client\Curl\AUTH_ANY,
         Horde_Http::AUTH_BASIC => \http\Client\Curl\AUTH_BASIC,
         Horde_Http::AUTH_DIGEST => \http\Client\Curl\AUTH_DIGEST,
         Horde_Http::AUTH_GSSNEGOTIATE => \http\Client\Curl\AUTH_GSSNEG,
         Horde_Http::AUTH_NTLM => \http\Client\Curl\AUTH_NTLM,
-    );
+    ];
 
     /**
      * Map of proxy types from Horde_Http to implementation specific constants.
      * @var array
      */
-    protected $_proxyTypes = array(
+    protected $_proxyTypes = [
         Horde_Http::PROXY_SOCKS4 => \http\Client\Curl\PROXY_SOCKS4,
-        Horde_Http::PROXY_SOCKS5 => \http\Client\Curl\PROXY_SOCKS5
-    );
+        Horde_Http::PROXY_SOCKS5 => \http\Client\Curl\PROXY_SOCKS5,
+    ];
 
     /**
      * Constructor
      *
      * @throws Horde_Http_Exception
      */
-    public function __construct($args = array())
+    public function __construct($args = [])
     {
         if (!class_exists('\http\Client', false)) {
             throw new Horde_Http_Exception('The pecl_http extension is not installed. See http://php.net/http.install');
@@ -68,9 +69,9 @@ class Horde_Http_Request_Peclhttp2 extends Horde_Http_Request_PeclhttpBase
     public function send()
     {
         // at this time only the curl driver is supported
-        $client = new \http\Client('curl');
+        $client = new http\Client('curl');
 
-        $body = new \http\Message\Body();
+        $body = new http\Message\Body();
         $data = $this->data;
         if (is_array($data)) {
             $body->addForm($data);
@@ -78,7 +79,7 @@ class Horde_Http_Request_Peclhttp2 extends Horde_Http_Request_PeclhttpBase
             $body->append($data);
         }
 
-        $httpRequest = new \http\Client\Request($this->method, (string)$this->uri, $this->headers, $body);
+        $httpRequest = new http\Client\Request($this->method, (string) $this->uri, $this->headers, $body);
 
         $client->setOptions($this->_httpOptions());
 
@@ -87,10 +88,10 @@ class Horde_Http_Request_Peclhttp2 extends Horde_Http_Request_PeclhttpBase
         try {
             $client->send();
             $httpResponse = $client->getResponse($httpRequest);
-        } catch (\http\Exception $e) {
+        } catch (http\Exception $e) {
             throw new Horde_Http_Exception($e);
         }
 
-        return new Horde_Http_Response_Peclhttp2((string)$this->uri, $httpResponse);
+        return new Horde_Http_Response_Peclhttp2((string) $this->uri, $httpResponse);
     }
 }

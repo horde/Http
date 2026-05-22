@@ -52,3 +52,4 @@ vendor: horde
 quality:
   phpstan:
     level: 9
+keywords: []
