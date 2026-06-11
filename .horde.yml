@@ -34,7 +34,7 @@ provides:
   psr/http-client-implementation: ^1.0.3
 dependencies:
   required:
-    php: ^7.4 || ^8
+    php: ^8.1
     composer:
       horde/exception: ^3
       horde/support: ^3
