@@ -163,6 +163,17 @@
     uri: http://www.horde.org/licenses/bsd
   notes: |
     Original version string was 3.0.0alpha1
+3.0.0-RC3:
+  api: 3.0.0-RC3
+  state:
+    release: RC
+    api: RC
+  date: 2026-06-11
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: |-
+    feat: Cookie handling domain object model
 3.0.0-RC2:
   api: 3.0.0-RC2
   state:
