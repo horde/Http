@@ -16,7 +16,12 @@
             "role": "lead"
         }
     ],
-    "time": "2026-06-27",
+    "keywords": [
+        "psr-18 http client",
+        "psr-7 shapes",
+        "http factories"
+    ],
+    "time": "2026-07-11",
     "repositories": [],
     "require": {
         "php": "^8.1",

@@ -1,4 +1,14 @@
 ---
+3.1.0:
+  api: 3.1.0
+  state:
+    release: stable
+    api: stable
+  date: 2026-07-11
+  license:
+    identifier: BSD-2-Clause
+    uri: https://spdx.org/licenses/BSD-2-Clause.html
+  notes: "refactor(phpstan): Pass level 9 again by more strict type checking and phpdoc types\nfeat: Mock Client tracks request objects received in the sendRequest method\nchore: refresh CI bootstrap"
 3.0.0:
   api: 3.0.0
   state:
