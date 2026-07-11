@@ -7,10 +7,6 @@ namespace Horde\Http;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 use Throwable;
-use feof;
-use fclose;
-use ftell;
-use fwrite;
 use InvalidArgumentException;
 
 /**
@@ -25,21 +21,24 @@ use InvalidArgumentException;
 class Stream implements StreamInterface
 {
     /**
-     * Cannot type for resource in php 7.x so keep this annotation
+     * The underlying PHP stream, or null after detach()/close(). PHP has
+     * no native type for `resource`; we store it here and validate at
+     * the boundary in the constructor.
      *
-     * @var resource $stream
+     * @var resource|null
      */
     protected $stream;
-    protected bool $seekable;
-    protected bool $readable;
-    protected bool $writable;
+    protected bool $seekable = false;
+    protected bool $readable = false;
+    protected bool $writable = false;
     protected ?int $size = null;
     protected ?string $uri = null;
 
     /**
-     * Stream constructor
+     * @param resource $stream A live PHP stream resource. The constructor
+     *   rejects anything that is not `is_resource()`.
      */
-    public function __construct($stream)
+    public function __construct(mixed $stream)
     {
         // Cannot typehint for resource
         if (!is_resource($stream)) {
@@ -50,7 +49,7 @@ class Stream implements StreamInterface
         $this->seekable = $meta['seekable'];
         $this->readable = in_array($meta['mode'], Constants::READABLE_STREAM_MODES);
         $this->writable = in_array($meta['mode'], Constants::WRITABLE_STREAM_MODES);
-        $this->uri = $meta['uri'];
+        $this->uri = is_string($meta['uri'] ?? null) ? $meta['uri'] : null;
     }
     /**
      * Reads all data from the stream into a string, from the beginning to end.
@@ -86,7 +85,7 @@ class Stream implements StreamInterface
      */
     public function close(): void
     {
-        if (!empty($this->stream)) {
+        if ($this->stream !== null) {
             fclose($this->stream);
             $this->detach();
         }
@@ -101,11 +100,11 @@ class Stream implements StreamInterface
      */
     public function detach()
     {
-        if (empty($this->stream)) {
+        if ($this->stream === null) {
             return null;
         }
         $ret = $this->stream;
-        unset($this->stream);
+        $this->stream = null;
         $this->size = null;
         $this->uri = null;
         $this->readable = false;
@@ -125,6 +124,18 @@ class Stream implements StreamInterface
     }
 
     /**
+     * @return resource The still-attached stream resource.
+     * @throws RuntimeException When detach()/close() has already run.
+     */
+    private function requireStream()
+    {
+        if ($this->stream === null) {
+            throw new RuntimeException('Stream is detached');
+        }
+        return $this->stream;
+    }
+
+    /**
      * Returns the current position of the file read/write pointer
      *
      * @return int Position of the file pointer
@@ -132,7 +143,7 @@ class Stream implements StreamInterface
      */
     public function tell(): int
     {
-        $res = ftell($this->stream);
+        $res = ftell($this->requireStream());
         if ($res === false) {
             throw new RuntimeException('Could not determine current stream position');
         }
@@ -146,7 +157,7 @@ class Stream implements StreamInterface
      */
     public function eof(): bool
     {
-        return $this->stream ? feof($this->stream) : true;
+        return $this->stream === null ? true : feof($this->stream);
     }
 
     /**
@@ -176,8 +187,8 @@ class Stream implements StreamInterface
         if (!$this->seekable) {
             throw new RuntimeException('Could not seek this stream');
         }
-        $res = fseek($this->stream, $offset, $whence);
-        if ($res == -1) {
+        $res = fseek($this->requireStream(), $offset, $whence);
+        if ($res === -1) {
             throw new RuntimeException('Could not seek desired position');
         }
     }
@@ -216,7 +227,7 @@ class Stream implements StreamInterface
      */
     public function write($string): int
     {
-        $res = fwrite($this->stream, $string);
+        $res = fwrite($this->requireStream(), $string);
         if ($res === false) {
             throw new RuntimeException('Could not write to stream');
         }
@@ -245,7 +256,10 @@ class Stream implements StreamInterface
      */
     public function read(int $length): string
     {
-        $data = empty($length) ? '' : fread($this->stream, $length);
+        if ($length < 1) {
+            return '';
+        }
+        $data = fread($this->requireStream(), $length);
         if ($data === false) {
             throw new RuntimeException('Could not read stream');
         }
@@ -261,7 +275,7 @@ class Stream implements StreamInterface
      */
     public function getContents(): string
     {
-        $contents = stream_get_contents($this->stream);
+        $contents = stream_get_contents($this->requireStream());
         if ($contents === false) {
             throw new RuntimeException('Could not read stream');
         }
@@ -275,18 +289,18 @@ class Stream implements StreamInterface
      * stream_get_meta_data() function.
      *
      * @link http://php.net/manual/en/function.stream-get-meta-data.php
-     * @param string $key Specific metadata to retrieve.
-     * @return array|mixed|null Returns an associative array if no key is
+     * @param string|null $key Specific metadata to retrieve.
+     * @return array<string, mixed>|mixed|null Returns an associative array if no key is
      *     provided. Returns a specific key value if a key is provided and the
      *     value is found, or null if the key is not found.
      */
     public function getMetadata($key = null)
     {
-        if (!isset($this->stream)) {
-            return $key ? null : [];
+        if ($this->stream === null) {
+            return $key !== null ? null : [];
         }
         $meta = stream_get_meta_data($this->stream);
-        if ($key) {
+        if ($key !== null) {
             return $meta[$key] ?? null;
         }
         return $meta;

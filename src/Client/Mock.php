@@ -43,9 +43,9 @@ class Mock implements ClientInterface
     /**
      * Mock responses to return.
      *
-     * @var array
+     * @var list<ResponseInterface>
      */
-    protected $responses = [];
+    protected array $responses = [];
 
     /**
      * Requests received by sendRequest(), in call order.
@@ -53,7 +53,7 @@ class Mock implements ClientInterface
      * Recorded so tests can assert on the effective URI, method and
      * headers of what the client under test actually sent.
      *
-     * @var array<int, RequestInterface>
+     * @var list<RequestInterface>
      */
     protected array $requests = [];
 
@@ -72,9 +72,9 @@ class Mock implements ClientInterface
      * Set the HTTP response(s) to be returned by this adapter. This overwrites
      * any responses set before.
      *
-     * @param ResponseInterface|ResponseInterface[] $responses
+     * @param ResponseInterface|list<ResponseInterface> $responses
      */
-    public function setResponse($responses)
+    public function setResponse(ResponseInterface|array $responses): void
     {
         $this->responses = [];
         is_array($responses) ? $this->addResponses($responses) : $this->addResponses([$responses]);
@@ -83,7 +83,7 @@ class Mock implements ClientInterface
     /**
      * Set the HTTP response(s) to be returned by this adapter as an array Response objects.
      *
-     * @param iterable $responses The responses to be added to the stack.
+     * @param iterable<ResponseInterface> $responses The responses to be added to the stack.
      *
      * @return void
      */
@@ -97,19 +97,16 @@ class Mock implements ClientInterface
     /**
      * Adds a response to the stack of responses.
      *
-     * @param string|resource $body    The response body content.
-     * @param string          $code    The response code.
-     * @param string          $uri     The request uri.
-     * @param array           $headers Response headers. This can be one string
-     *                                 representing the whole header or an array
-     *                                 of strings with one string per header
-     *                                 line.
+     * @param string|resource|StreamInterface $body The response body content.
+     * @param int $code The response HTTP status code.
+     * @param string $uri The request uri (reserved for future use).
+     * @param array<string, string|list<string>> $headers Response headers.
      *
      * @return ResponseInterface The response.
      */
     public function addResponse(
         $body,
-        string|int $code = 200,
+        int $code = 200,
         string $uri = '',
         array $headers = []
     ): ResponseInterface {

@@ -9,6 +9,7 @@ namespace Horde\Http;
 
 use Psr\Http\Client\NetworkExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use Throwable;
 
 /**
  * Thrown when the request cannot be completed because of network issues.
@@ -20,6 +21,25 @@ use Psr\Http\Message\RequestInterface;
 class NetworkException extends Exception implements NetworkExceptionInterface
 {
     private RequestInterface $request;
+
+    public function __construct(
+        RequestInterface $request,
+        string $message = '',
+        int $code = 0,
+        ?Throwable $previous = null,
+    ) {
+        // Horde_Exception_Wrapped's constructor only takes ($message, $code)
+        // — it derives the chained previous from a Throwable passed as
+        // $message. Preserve the caller's intent by passing $previous
+        // through that mechanism when the caller supplied one and $message
+        // was left empty.
+        if ($previous !== null && $message === '') {
+            parent::__construct($previous, $code);
+        } else {
+            parent::__construct($message, $code);
+        }
+        $this->request = $request;
+    }
 
     /**
      * Returns the request.

@@ -12,9 +12,9 @@ use Psr\Http\Message\StreamFactoryInterface;
 
 class UploadedFile implements UploadedFileInterface
 {
-    protected ?string $originalName;
-    protected ?string $mimeType;
-    protected ?int $error;
+    protected ?string $originalName = null;
+    protected ?string $mimeType = null;
+    protected int $error;
     protected ?int $size;
     protected ?string $clientFileName;
     protected ?string $clientMediaType;
@@ -23,34 +23,50 @@ class UploadedFile implements UploadedFileInterface
     private StreamFactoryInterface $streamFactory;
 
     /**
-     * $copyChunkSize
-     *
-     * When copying a stream by reading and writing,
-     * use chunks of 256k to prevent allocating large amounts of memory
-     *
-     * @var int
+     * When copying a stream by reading and writing, use chunks of 256k
+     * to prevent allocating large amounts of memory.
      */
     private int $copyChunkSize = 262144;
 
 
     /**
-     *
+     * @param StreamInterface $stream The uploaded file's stream.
+     * @param StreamFactoryInterface $streamFactory Used by moveTo().
+     * @param string|null $clientFileName The name the client submitted, if any.
+     * @param string|null $clientMediaType The media type the client submitted, if any.
+     * @param int|null $error One of PHP's UPLOAD_ERR_* constants. `null` is
+     *   accepted for BC and normalised to `UPLOAD_ERR_OK` (0); PSR-7 requires
+     *   the return of `getError()` to be an int.
+     * @param int|null $size File size in bytes, if known.
      */
     public function __construct(
         StreamInterface $stream,
         StreamFactoryInterface $streamFactory,
-        string $clientFileName,
-        string $clientMediaType,
+        ?string $clientFileName,
+        ?string $clientMediaType,
         ?int $error,
         ?int $size = null
     ) {
         $this->stream = $stream;
         $this->streamFactory = $streamFactory;
         $this->size = $size;
-        $this->error = $error;
+        $this->error = $error ?? UPLOAD_ERR_OK;
         $this->clientFileName = $clientFileName;
         $this->clientMediaType = $clientMediaType;
     }
+    /**
+     * @return StreamInterface The still-attached stream.
+     * @throws RuntimeException When the stream is no longer attached
+     *   (moveTo() was called earlier, or the file was constructed without one).
+     */
+    private function activeStream(): StreamInterface
+    {
+        if ($this->hasCalledMoveTo || $this->stream === null) {
+            throw new RuntimeException('Uploaded file stream is no longer available (moveTo already called)');
+        }
+        return $this->stream;
+    }
+
     /**
      * Retrieve a stream representing the uploaded file.
      *
@@ -69,11 +85,7 @@ class UploadedFile implements UploadedFileInterface
      */
     public function getStream(): StreamInterface
     {
-        // TODO: Any sanity checks on the stream
-        if ($this->hasCalledMoveTo) {
-            throw new RuntimeException('Calling getStream after moveTo not allowed by PSR-7 spec');
-        }
-        return $this->stream;
+        return $this->activeStream();
     }
 
     /**
@@ -113,15 +125,16 @@ class UploadedFile implements UploadedFileInterface
         if ($this->hasCalledMoveTo) {
             throw new RuntimeException("Cannot call moveTo twice on same UploadedFile");
         }
-        if (empty($targetPath) || !is_string($targetPath)) {
+        if ($targetPath === '') {
             throw new InvalidArgumentException("targetPath must be a non-empty string");
         }
+        $source = $this->activeStream();
         // Open a new stream from file handle
         $target = $this->streamFactory->createStreamFromFile($targetPath, 'r+');
 
         // Read/write chunks until eof
-        while (!$this->stream->eof()) {
-            $target->write($this->stream->read($this->copyChunkSize));
+        while (!$source->eof()) {
+            $target->write($source->read($this->copyChunkSize));
         }
 
         $this->hasCalledMoveTo = true;

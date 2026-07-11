@@ -47,7 +47,7 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
      * @param UriInterface|string $uri The URI associated with the request. If
      *     the value is a string, the factory MUST create a UriInterface
      *     instance based on it.
-     * @param array $serverParams Array of SAPI parameters with which to seed
+     * @param array<string, mixed> $serverParams Array of SAPI parameters with which to seed
      *     the generated request instance.
      *
      * @return ServerRequestInterface

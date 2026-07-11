@@ -533,21 +533,4 @@ class Uri implements UriInterface
 
         return $uri;
     }
-
-
-    /**
-     * Helper: If protocol and port match, make port empty
-     *
-     * @param string $schema
-     * @param int|null $port
-     *
-     * @return null|int
-     */
-    private function nullStandardPorts(string $schema, ?int $port): ?int
-    {
-        if ($schema && !empty(Constants::URI_SCHEMATA[$schema]) && Constants::URI_SCHEMATA[$schema] == $port) {
-            return null;
-        }
-        return $port;
-    }
 }

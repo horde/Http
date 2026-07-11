@@ -8,6 +8,7 @@ use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use InvalidArgumentException;
+use Stringable;
 
 /**
  * Implementation of Request methods not covered by MessageImplementation.
@@ -18,18 +19,22 @@ use InvalidArgumentException;
 trait RequestImplementation
 {
     /**
-     * HTTP Verb
+     * HTTP Verb.
      *
-     * @var ?string
+     * Set by the constructor and updated via withMethod(); PSR-7 mandates
+     * the request always has a method, so this is non-null after
+     * construction.
      */
-    private ?string $method;
+    private string $method;
 
     /**
-     * URI
+     * Request URI.
      *
-     * @var UriInterface
+     * Set by the constructor and updated via withUri(); PSR-7 mandates
+     * getUri() returns a UriInterface, so this is non-null after
+     * construction.
      */
-    private ?UriInterface $uri;
+    private UriInterface $uri;
 
     /**
      * Retrieves the message's request target.
@@ -68,12 +73,20 @@ trait RequestImplementation
      *
      * @link http://tools.ietf.org/html/rfc7230#section-5.3 (for the various
      *     request-target forms allowed in request messages)
-     * @param mixed $requestTarget
+     * @param mixed $requestTarget A string, a Stringable object, or any
+     *     value that will be rejected with InvalidArgumentException.
      * @return static
+     * @throws InvalidArgumentException When $requestTarget is neither a string nor Stringable.
      */
     public function withRequestTarget($requestTarget): RequestInterface
     {
-        $pathAndQuery = explode('?', (string) $requestTarget, 2);
+        if ($requestTarget instanceof Stringable) {
+            $requestTarget = (string) $requestTarget;
+        }
+        if (!is_string($requestTarget)) {
+            throw new InvalidArgumentException('Request target must be a string or Stringable');
+        }
+        $pathAndQuery = explode('?', $requestTarget, 2);
         $path = $pathAndQuery[0];
         $uri = $this->uri->withPath($path);
         if (count($pathAndQuery) === 2) {

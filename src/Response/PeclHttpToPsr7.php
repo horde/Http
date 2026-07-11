@@ -25,16 +25,12 @@ trait PeclHttpToPsr7
     private function convertPeclHttpResponseToPsr7(
         PeclHttpResponse $httpResponse
     ): ResponseInterface {
-        try {
-            $info = $httpResponse->getTransferInfo();
-        } catch (\http\Exception $e) {
-            throw new ClientException($e);
+        $info = $httpResponse->getTransferInfo();
+        if (!is_object($info)) {
+            throw new ClientException('pecl_http returned unexpected transfer info shape');
         }
-        try {
-            $uri = $info->effective_url;
-        } catch (\http\Exception\RuntimeException $e) {
-            // TODO
-        }
+        /** @var object{effective_url: string, response_code: int} $info */
+        $uri = $info->effective_url;
         $httpVersion = $httpResponse->getHttpVersion();
         $responseCode = $info->response_code;
         $headers = $httpResponse->getHeaders();

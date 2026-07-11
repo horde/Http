@@ -8,8 +8,7 @@ use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
-use is_array;
-use is_object;
+use Psr\Http\Message\UriInterface;
 
 /**
  * A PSR-7 HTTP server request message for Horde
@@ -23,14 +22,67 @@ class ServerRequest implements ServerRequestInterface
     use MessageImplementation;
     use RequestImplementation;
 
+    /**
+     * Cookies sent by the client.
+     *
+     * Shape mirrors `$_COOKIE` after `parse_str()`-style decoding: keys are
+     * cookie names, values may nest for bracketed names.
+     *
+     * @var array<string, mixed>
+     */
     private array $cookieParams = [];
-    private array $attributes = [];
-    private array $queryParams = [];
-    private iterable $serverParams;
-    private array $uploadedFiles = [];
-    // TODO: PHP 8: Union type!
-    private $parsedBody;
 
+    /**
+     * Application-supplied request attributes.
+     *
+     * @var array<string, mixed>
+     */
+    private array $attributes = [];
+
+    /**
+     * Deserialised query string arguments.
+     *
+     * Shape mirrors what `parse_str()` produces so nested keys ("foo[bar]=")
+     * are preserved.
+     *
+     * @var array<string, mixed>
+     */
+    private array $queryParams = [];
+
+    /**
+     * Server parameters, typically derived from `$_SERVER`.
+     *
+     * @var array<string, mixed>
+     */
+    private array $serverParams;
+
+    /**
+     * Uploaded files as a tree matching the submitted structure, with
+     * `Psr\Http\Message\UploadedFileInterface` at each leaf.
+     *
+     * @var array<string, mixed>
+     */
+    private array $uploadedFiles = [];
+
+    /**
+     * Deserialised body parameters (typically `$_POST` for form-encoded
+     * POST requests). PSR-7 does not restrict the array key type.
+     *
+     * @var array<array-key, mixed>|object|null
+     */
+    private array|object|null $parsedBody = null;
+
+    /**
+     * @param string $method HTTP method.
+     * @param UriInterface|string $uri Request URI.
+     * @param iterable<string, string|list<string>> $headers Header lines.
+     * @param StreamInterface|string|null $body Request body.
+     * @param string $version HTTP protocol version.
+     * @param iterable<string, mixed> $serverParams Server parameters. Any
+     *   `Traversable` is materialised to an array on entry — the property
+     *   stores an array for O(1) lookups and to match PSR-7's array-shaped
+     *   getServerParams() return.
+     */
     public function __construct(string $method, $uri, iterable $headers = [], $body = null, string $version = '1.1', iterable $serverParams = [])
     {
         if (is_string($uri)) {
@@ -63,7 +115,9 @@ class ServerRequest implements ServerRequestInterface
             $this->stream = $factory->createStream($body);
         }
         // If body is null or empty string, it will create an empty stream on access
-        $this->serverParams = $serverParams;
+        $this->serverParams = is_array($serverParams)
+            ? $serverParams
+            : iterator_to_array($serverParams);
 
         // TODO: parse queryParams from uri
     }
@@ -75,7 +129,7 @@ class ServerRequest implements ServerRequestInterface
      * typically derived from PHP's $_SERVER superglobal. The data IS NOT
      * REQUIRED to originate from $_SERVER.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getServerParams(): array
     {
@@ -90,7 +144,7 @@ class ServerRequest implements ServerRequestInterface
      * The data MUST be compatible with the structure of the $_COOKIE
      * superglobal.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getCookieParams(): array
     {
@@ -111,7 +165,7 @@ class ServerRequest implements ServerRequestInterface
      * immutability of the message, and MUST return an instance that has the
      * updated cookie values.
      *
-     * @param array $cookies Array of key/value pairs representing cookies.
+     * @param array<string, mixed> $cookies Array of key/value pairs representing cookies.
      * @return static
      */
     public function withCookieParams(array $cookies): ServerRequestInterface
@@ -132,7 +186,7 @@ class ServerRequest implements ServerRequestInterface
      * values, you may need to parse the query string from `getUri()->getQuery()`
      * or from the `QUERY_STRING` server param.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getQueryParams(): array
     {
@@ -157,7 +211,7 @@ class ServerRequest implements ServerRequestInterface
      * immutability of the message, and MUST return an instance that has the
      * updated query string arguments.
      *
-     * @param array $query Array of query string arguments, typically from
+     * @param array<string, mixed> $query Array of query string arguments, typically from
      *     $_GET.
      * @return static
      */
@@ -178,7 +232,7 @@ class ServerRequest implements ServerRequestInterface
      * These values MAY be prepared from $_FILES or the message body during
      * instantiation, or MAY be injected via withUploadedFiles().
      *
-     * @return array An array tree of UploadedFileInterface instances; an empty
+     * @return array<string, mixed> An array tree of UploadedFileInterface instances; an empty
      *     array MUST be returned if no data is present.
      */
     public function getUploadedFiles(): array
@@ -193,7 +247,7 @@ class ServerRequest implements ServerRequestInterface
      * immutability of the message, and MUST return an instance that has the
      * updated body parameters.
      *
-     * @param array $uploadedFiles An array tree of UploadedFileInterface instances.
+     * @param array<string, mixed> $uploadedFiles An array tree of UploadedFileInterface instances.
      * @return static
      * @throws InvalidArgumentException if an invalid structure is provided.
      */
@@ -216,7 +270,7 @@ class ServerRequest implements ServerRequestInterface
      * potential types MUST be arrays or objects only. A null value indicates
      * the absence of body content.
      *
-     * @return null|array|object The deserialized body parameters, if any.
+     * @return null|array<array-key, mixed>|object The deserialized body parameters, if any.
      *     These will typically be an array or object.
      */
     public function getParsedBody(): array|object|null
@@ -246,8 +300,9 @@ class ServerRequest implements ServerRequestInterface
      * immutability of the message, and MUST return an instance that has the
      * updated body parameters.
      *
-     * @param null|array|object $data The deserialized body data. This will
-     *     typically be in an array or object.
+     * @param mixed $data The deserialized body data. PSR-7 requires the
+     *     value to be array, object, or null; any other type is rejected
+     *     with InvalidArgumentException.
      * @return static
      * @throws InvalidArgumentException if an unsupported argument type is
      *     provided.
@@ -271,7 +326,7 @@ class ServerRequest implements ServerRequestInterface
      * deserializing non-form-encoded message bodies; etc. Attributes
      * will be application and request specific, and CAN be mutable.
      *
-     * @return array Attributes derived from the request.
+     * @return array<string, mixed> Attributes derived from the request.
      */
     public function getAttributes(): array
     {

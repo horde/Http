@@ -40,11 +40,9 @@ class Request implements RequestInterface
      *
      * @param string $method HTTP method
      * @param string|UriInterface $uri URI
-     * @param iterable $headers Request headers
+     * @param iterable<string, string|list<string>> $headers Request headers
      * @param string|resource|StreamInterface|null $body Request body
      * @param string $version Protocol version
-     *
-     * @TODO: On PHP 8, use property parameters and union types
      */
     public function __construct(string $method, $uri, iterable $headers = [], $body = null, string $version = '1.1')
     {

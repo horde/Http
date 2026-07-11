@@ -49,9 +49,9 @@ class PeclHttp implements ClientInterface
      * Map of HTTP authentication schemes from Horde_Http constants to
      * implementation specific constants.
      *
-     * @var array
+     * @var array<string, int>
      */
-    protected $httpAuthSchemes = [
+    protected array $httpAuthSchemes = [
         Constants::AUTH_ANY => \http\Client\Curl\AUTH_ANY,
         Constants::AUTH_BASIC => \http\Client\Curl\AUTH_BASIC,
         Constants::AUTH_DIGEST => \http\Client\Curl\AUTH_DIGEST,
@@ -59,14 +59,20 @@ class PeclHttp implements ClientInterface
         Constants::AUTH_NTLM => \http\Client\Curl\AUTH_NTLM,
     ];
 
+    /**
+     * Headers accumulated by the Psr7ToPeclHttp trait during request
+     * conversion. `null` before that trait has populated it.
+     *
+     * @var array<string, string|list<string>>|null
+     */
     protected ?array $headers = null;
-    protected string $proxyType;
+    protected int $proxyType = Constants::PROXY_HTTP;
     /**
      * Map of proxy types from Horde_Http to implementation specific constants.
      *
-     * @var array
+     * @var array<int, int>
      */
-    protected $proxyTypes = [
+    protected array $proxyTypes = [
         Constants::PROXY_SOCKS4 => \http\Client\Curl\PROXY_SOCKS4,
         Constants::PROXY_SOCKS5 => \http\Client\Curl\PROXY_SOCKS5,
     ];
@@ -80,10 +86,10 @@ class PeclHttp implements ClientInterface
      *
      * @param string $httpAuthScheme  A Horde_Http::AUTH_* constant.
      *
-     * @return string An implementation specific authentication scheme constant.
+     * @return int An implementation specific authentication scheme constant.
      * @throws ClientException
      */
-    protected function httpAuthScheme($httpAuthScheme)
+    protected function httpAuthScheme(string $httpAuthScheme): int
     {
         if (!isset($this->httpAuthSchemes[$httpAuthScheme])) {
             throw new ClientException('Unsupported authentication scheme (' . $httpAuthScheme . ')');
@@ -95,10 +101,10 @@ class PeclHttp implements ClientInterface
      * Translates a Horde_Http::PROXY_* constant to implementation specific
      * constants.
      *
-     * @return string
+     * @return int
      * @throws ClientException
      */
-    protected function proxyType()
+    protected function proxyType(): int
     {
         $proxyType = $this->proxyType;
         if (!isset($this->proxyTypes[$proxyType])) {
@@ -110,44 +116,58 @@ class PeclHttp implements ClientInterface
     /**
      * Generates the HTTP options for the request.
      *
-     * @return array array with options
+     * @return array<string, mixed> array with options
      * @throws ClientException
      */
-    protected function httpOptions()
+    protected function httpOptions(): array
     {
         // Set options
+        $redirects = $this->options->getInt('redirects');
+        $verifyPeer = $this->options->getBool('verifyPeer', true);
         $httpOptions = [
-            'headers' => $this->headers,
-            'redirect' => (int) $this->options->getOption('redirects'),
+            'headers' => $this->headers ?? [],
+            'redirect' => $redirects ?? 0,
             'ssl' => [
-                'verifypeer' => $this->options->getOption('verifyPeer'),
-                'verifyhost' => $this->options->getOption('verifyPeer'),
+                'verifypeer' => $verifyPeer,
+                'verifyhost' => $verifyPeer,
             ],
-            'timeout' => $this->options->getOption('timeout'),
-            'useragent' => $this->options->getOption('userAgent'),
+            'timeout' => $this->options->getInt('timeout'),
+            'useragent' => $this->options->getString('userAgent'),
         ];
 
         // Proxy settings
-        if ($this->options->getOption('proxyServer')) {
-            $httpOptions['proxyhost'] = $this->options->getOption('proxyServer');
-            if ($this->options->getOption('proxyPort')) {
-                $httpOptions['proxyport'] = $this->options->getOption('proxyPort');
+        $proxyServer = $this->options->getString('proxyServer');
+        if ($proxyServer !== null && $proxyServer !== '') {
+            $httpOptions['proxyhost'] = $proxyServer;
+            $proxyPort = $this->options->getInt('proxyPort');
+            if ($proxyPort) {
+                $httpOptions['proxyport'] = $proxyPort;
             }
-            if ($this->options->getOption('proxyUsername') && $this->options->getOption('proxyPassword')) {
-                $httpOptions['proxyauth'] = $this->options->getOption('proxyUsername') . ':' . $this->options->getOption('proxyPassword');
-                $httpOptions['proxyauthtype'] = $this->httpAuthScheme($this->options->getOption('proxyAuthenticationScheme'));
+            $proxyUsername = $this->options->getString('proxyUsername');
+            $proxyPassword = $this->options->getString('proxyPassword');
+            if ($proxyUsername !== null && $proxyUsername !== '' && $proxyPassword !== null && $proxyPassword !== '') {
+                $httpOptions['proxyauth'] = $proxyUsername . ':' . $proxyPassword;
+                $proxyAuthScheme = $this->options->getString('proxyAuthenticationScheme');
+                if ($proxyAuthScheme !== null) {
+                    $httpOptions['proxyauthtype'] = $this->httpAuthScheme($proxyAuthScheme);
+                }
             }
-            if ($this->proxyType == Constants::PROXY_SOCKS4 || $this->proxyType == Constants::PROXY_SOCKS5) {
+            if ($this->proxyType === Constants::PROXY_SOCKS4 || $this->proxyType === Constants::PROXY_SOCKS5) {
                 $httpOptions['proxytype'] = $this->proxyType();
-            } elseif ($this->options->getOption('proxyType') != Constants::PROXY_HTTP) {
-                throw new ClientException(sprintf('Proxy type %s not supported by this request type!', $this->options->getOption('proxyType')));
+            } elseif ($this->options->getInt('proxyType') !== Constants::PROXY_HTTP) {
+                throw new ClientException(sprintf('Proxy type %d not supported by this request type!', (int) $this->options->getInt('proxyType')));
             }
         }
 
         // Authentication settings
-        if ($this->options->getOption('username')) {
-            $httpOptions['httpauth'] = $this->options->getOption('username') . ':' . $this->options->getOption('password');
-            $httpOptions['httpauthtype'] = $this->httpAuthScheme($this->options->getOption('authenticationScheme'));
+        $username = $this->options->getString('username');
+        if ($username !== null && $username !== '') {
+            $password = (string) $this->options->getString('password');
+            $httpOptions['httpauth'] = $username . ':' . $password;
+            $authScheme = $this->options->getString('authenticationScheme');
+            if ($authScheme !== null) {
+                $httpOptions['httpauthtype'] = $this->httpAuthScheme($authScheme);
+            }
         }
 
         return $httpOptions;
@@ -186,8 +206,10 @@ class PeclHttp implements ClientInterface
         } catch (\http\Exception $e) {
             throw new ClientException($e);
         }
+        if ($httpResponse === null) {
+            throw new ClientException('pecl_http returned no response for the sent request');
+        }
         // Convert the pecl/Http response into a psr-7 response
-        $psr7Response = $this->convertPeclHttpResponseToPsr7($httpResponse);
-        return $psr7Response;
+        return $this->convertPeclHttpResponseToPsr7($httpResponse);
     }
 }

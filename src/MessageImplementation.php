@@ -17,28 +17,28 @@ use Psr\Http\Message\RequestInterface;
 trait MessageImplementation
 {
     /**
-     * Original header names and content
+     * Header values, keyed by the original (case-preserving) header name.
      *
-     * @var string[][] Keys: Original header names
+     * @var array<string, list<string>>
      */
     private array $headers = [];
 
     /**
-     * Lookup original names from normalized names
+     * Lookup original names from normalized (lowercased) header names.
      *
-     * @var string[] Keys: lowercase header names
-     **/
+     * @var array<string, string>
+     */
     private array $headerNames = [];
 
-    /** @var string */
     private string $protocolVersion = '1.1';
 
     /**
-     * Stream content of the message
+     * Stream content of the message.
      *
-     * @var StreamInterface|null The stream
+     * Lazily created by getBody() when read before withBody() has been
+     * called.
      */
-    private $stream;
+    private ?StreamInterface $stream = null;
 
     /**
      * Retrieves the HTTP protocol version as a string.
@@ -93,7 +93,7 @@ trait MessageImplementation
      * While header names are not case-sensitive, getHeaders() will preserve the
      * exact case in which headers were originally specified.
      *
-     * @return string[][] Returns an associative array of the message's headers. Each
+     * @return array<string, list<string>> Returns an associative array of the message's headers. Each
      *     key MUST be a header name, and each value MUST be an array of strings
      *     for that header.
      */
@@ -125,14 +125,14 @@ trait MessageImplementation
      * empty array.
      *
      * @param string $name Case-insensitive header field name.
-     * @return string[] An array of string values as provided for the given
+     * @return list<string> An array of string values as provided for the given
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
     public function getHeader(string $name): array
     {
         $origHeader = $this->getHeaderName($name);
-        if (empty($origHeader)) {
+        if ($origHeader === null) {
             return [];
         }
         return $this->headers[$origHeader];
@@ -161,7 +161,7 @@ trait MessageImplementation
      *
      * @param string $name  Header field name.
      */
-    private function setHeaderName(string $name)
+    private function setHeaderName(string $name): void
     {
         $lcHeader = Horde_String::lower($name);
         $this->headerNames[$lcHeader] = $name;
@@ -172,7 +172,7 @@ trait MessageImplementation
      *
      * @param string $name  Case-insensitive header field name.
      */
-    private function unsetHeaderName(string $name)
+    private function unsetHeaderName(string $name): void
     {
         $lcHeader = Horde_String::lower($name);
         unset($this->headerNames[$lcHeader]);
@@ -213,7 +213,7 @@ trait MessageImplementation
      * new and/or updated header and value.
      *
      * @param string $name Case-insensitive header field name.
-     * @param string|string[] $value Header value(s).
+     * @param string|list<string> $value Header value(s).
      * @return static
      * @throws InvalidArgumentException for invalid header names or values.
      */
@@ -241,11 +241,11 @@ trait MessageImplementation
      * - `\n` (0x0A)
      *
      *
-     * @param string $name the headers name.
-     * @param string[] $value the headers value(s).
+     * @param string   $name  the headers name.
+     * @param list<string> $value the headers value(s).
      * @throws InvalidArgumentException When the body is not valid.
      */
-    private function checkHeaderForInvalidAsciiChars(string $name, array $value)
+    private function checkHeaderForInvalidAsciiChars(string $name, array $value): void
     {
         $getWrongCharacters = function ($output) {
             $outputArray = [];
@@ -280,9 +280,9 @@ trait MessageImplementation
      * This modifies the copy inplace. Only use it after cloning.
      *
      * @param string $name Case-insensitive header field name.
-     * @param string|string[] $value Header value(s).
+     * @param string|list<string> $value Header value(s).
      */
-    private function storeHeader($name, string|array $value)
+    private function storeHeader(string $name, string|array $value): void
     {
         // Always store value in array format
         if (!is_array($value)) {
@@ -294,7 +294,10 @@ trait MessageImplementation
 
         // Avoid glitches, delete and create header instead of writing into it
         if ($this->hasHeader($name)) {
-            unset($this->headers[$this->getHeaderName($name)]);
+            $existing = $this->getHeaderName($name);
+            if ($existing !== null) {
+                unset($this->headers[$existing]);
+            }
         }
         $this->setHeaderName($name);
         $this->headers[$name] = $value;
@@ -312,7 +315,7 @@ trait MessageImplementation
      * new header and/or value.
      *
      * @param string $name Case-insensitive header field name to add.
-     * @param string|string[] $value Header value(s).
+     * @param string|list<string> $value Header value(s).
      * @return static
      * @throws InvalidArgumentException for invalid header names or values.
      */
@@ -328,6 +331,12 @@ trait MessageImplementation
         }
         $ret = clone ($this);
         $headerName = $ret->getHeaderName($name);
+        if ($headerName === null) {
+            // Should be unreachable — hasHeader() just told us the name is
+            // registered. Guard defensively so PHPStan does not have to
+            // consider a null-index into $headers.
+            return $ret->withHeader($name, $value);
+        }
         // TODO: What if we have two distinct uc/lc forms of the same header?
         $ret->headers[$headerName] = array_merge(
             $ret->headers[$headerName],
@@ -352,7 +361,9 @@ trait MessageImplementation
     {
         $ret = clone ($this);
         $headerName = $ret->getHeaderName($name);
-        unset($ret->headers[$headerName]);
+        if ($headerName !== null) {
+            unset($ret->headers[$headerName]);
+        }
         $ret->unsetHeaderName($name);
         return $ret;
     }

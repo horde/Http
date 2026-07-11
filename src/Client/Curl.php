@@ -40,13 +40,20 @@ class Curl implements ClientInterface
 {
     use ParseHeadersTrait;
     private ResponseFactoryInterface $responseFactory;
+    /**
+     * Accepted for API parity with other clients (Fopen, Mock). Curl's
+     * body flows through curl itself rather than a stream factory, so
+     * this field is unused by sendRequest() — kept to avoid a
+     * constructor signature break.
+     * @phpstan-ignore property.onlyWritten
+     */
     private StreamFactoryInterface $streamFactory;
     private Options $options;
     /**
      * Map of HTTP authentication schemes from Horde_Http constants to
      * HTTP_AUTH constants.
      *
-     * @var array
+     * @var array<string, int>
      */
     private const HTTP_AUTH_SCHEMES = [
         Constants::AUTH_ANY => CURLAUTH_ANY,
@@ -71,19 +78,37 @@ class Curl implements ClientInterface
     {
         // Parse request object and client settings into curl request parameters
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, (string) $request->getUri());
+        if ($curl === false) {
+            throw new ClientException('Failed to initialise curl session');
+        }
+        $uri = (string) $request->getUri();
+        if ($uri === '') {
+            throw new ClientException('Cannot send a request with an empty URI');
+        }
+        curl_setopt($curl, CURLOPT_URL, $uri);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_HEADER, true);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $request->getMethod());
-        curl_setopt($curl, CURLOPT_TIMEOUT, $this->options->getOption('timeout'));
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, $this->options->getOption('verifyPeer'));
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, $this->options->getOption('verifyPeer') ? 2 : 0);
+        $method = $request->getMethod();
+        if ($method === '') {
+            throw new ClientException('Cannot send a request with an empty method');
+        }
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        $timeout = $this->options->getInt('timeout');
+        if ($timeout !== null) {
+            curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+        }
+        $verifyPeer = $this->options->getBool('verifyPeer', true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, $verifyPeer);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, $verifyPeer ? 2 : 0);
 
         // User-Agent
-        curl_setopt($curl, CURLOPT_USERAGENT, $this->options->getOption('userAgent'));
+        $userAgent = $this->options->getString('userAgent');
+        if ($userAgent !== null && $userAgent !== '') {
+            curl_setopt($curl, CURLOPT_USERAGENT, $userAgent);
+        }
 
         // Redirects
-        $redirects = $this->options->getOption('redirects');
+        $redirects = $this->options->getInt('redirects');
         if ($redirects) {
             curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($curl, CURLOPT_MAXREDIRS, $redirects);
@@ -93,46 +118,50 @@ class Curl implements ClientInterface
         }
 
         // Proxy settings
-        $proxyServer = $this->options->getOption('proxyServer');
-        if ($proxyServer) {
+        $proxyServer = $this->options->getString('proxyServer');
+        if ($proxyServer !== null && $proxyServer !== '') {
             curl_setopt($curl, CURLOPT_PROXY, $proxyServer);
-            $proxyPort = $this->options->getOption('proxyPort');
+            $proxyPort = $this->options->getInt('proxyPort');
             if ($proxyPort) {
                 curl_setopt($curl, CURLOPT_PROXYPORT, $proxyPort);
             }
 
-            $proxyUsername = $this->options->getOption('proxyUsername');
-            $proxyPassword = $this->options->getOption('proxyPassword');
-            $proxyAuthenticationScheme = $this->options->getOption('proxyAuthenticationScheme');
+            $proxyUsername = $this->options->getString('proxyUsername');
+            $proxyPassword = $this->options->getString('proxyPassword');
+            $proxyAuthenticationScheme = $this->options->getString('proxyAuthenticationScheme');
 
             if ($proxyUsername && $proxyPassword) {
                 curl_setopt($curl, CURLOPT_PROXYUSERPWD, $proxyUsername . ':' . $proxyPassword);
-                curl_setopt($curl, CURLOPT_PROXYAUTH, $this->httpAuthScheme($proxyAuthenticationScheme));
+                if ($proxyAuthenticationScheme !== null) {
+                    curl_setopt($curl, CURLOPT_PROXYAUTH, $this->httpAuthScheme($proxyAuthenticationScheme));
+                }
             }
 
-            $proxyType = $this->options->getOption('proxyType');
-            if ($proxyType == Constants::PROXY_SOCKS5) {
+            $proxyType = $this->options->getInt('proxyType');
+            if ($proxyType === Constants::PROXY_SOCKS5) {
                 curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-            } elseif ($proxyType != Constants::PROXY_HTTP) {
-                throw new ClientException(sprintf('Proxy type %s not supported by this request type!', $proxyType));
+            } elseif ($proxyType !== Constants::PROXY_HTTP) {
+                throw new ClientException(sprintf('Proxy type %s not supported by this request type!', (string) $proxyType));
             }
         }
 
         // Authentication settings - Shouldn't we leave these to the request's header handling?
-        $username = $this->options->getOption('username');
-        $password = $this->options->getOption('password');
-        $authenticationScheme = $this->options->getOption('authenticationScheme');
+        $username = $this->options->getString('username');
+        $password = $this->options->getString('password');
+        $authenticationScheme = $this->options->getString('authenticationScheme');
 
-        if ($username) {
-            curl_setopt($curl, CURLOPT_USERPWD, $username . ':' . $password);
-            curl_setopt($curl, CURLOPT_HTTPAUTH, $this->httpAuthScheme($authenticationScheme));
+        if ($username !== null && $username !== '') {
+            curl_setopt($curl, CURLOPT_USERPWD, $username . ':' . (string) $password);
+            if ($authenticationScheme !== null) {
+                curl_setopt($curl, CURLOPT_HTTPAUTH, $this->httpAuthScheme($authenticationScheme));
+            }
         }
 
         // Concatenate the headers
         $headers = $request->getHeaders();
         // Why is that?
         if (empty($headers['Expect'])) {
-            $headers['Expect'] = '';
+            $headers['Expect'] = [''];
         }
         $headerLines = [];
         foreach (array_keys($headers) as $headerKey) {
@@ -142,14 +171,20 @@ class Curl implements ClientInterface
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headerLines);
 
         $body = $request->getBody();
-        if ($body) {
-            $bodyStr =  (string) $body;
+        $bodyStr = (string) $body;
+        if ($bodyStr !== '') {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $bodyStr);
         }
 
         $result = curl_exec($curl);
         if ($result === false) {
             throw new ClientException(curl_error($curl), curl_errno($curl));
+        }
+        if ($result === true) {
+            // Only happens when CURLOPT_RETURNTRANSFER is off, which we
+            // set to true above. Defensive: satisfy PHPStan's true|string
+            // narrowing without adding a silent misbehaviour.
+            throw new ClientException('curl_exec unexpectedly returned true; RETURNTRANSFER was set');
         }
         $info = curl_getinfo($curl);
         // Process curl answer into response
@@ -161,21 +196,27 @@ class Curl implements ClientInterface
          * headers of the latest response. */
         $matches = [];
         preg_match_all('/(^|\r\n\r\n)(HTTP\/)/', $result, $matches, PREG_OFFSET_CAPTURE);
-        $startOfHeaders = $matches[2][count($matches[2]) - 1][1];
+        $startOfHeaders = (int) $matches[2][count($matches[2]) - 1][1];
         $endOfHeaders = strpos($result, "\r\n\r\n", $startOfHeaders);
+        if ($endOfHeaders === false) {
+            throw new ClientException('Malformed HTTP response: no header/body delimiter');
+        }
         $headers = substr($result, $startOfHeaders, $endOfHeaders - $startOfHeaders);
 
 
         $headerList = $this->parseHeaders($headers);
         $body = substr($result, $endOfHeaders + 4);
 
-        $uriString = $info['url'];
-        $code = $info['http_code'];
+        $code = (int) $info['http_code'];
 
 
         $response = $this->responseFactory->createResponse($code);
         foreach ($headerList as $name => $value) {
-            $response = $response->withAddedHeader($name, $value);
+            if (!is_string($value) && !is_array($value)) {
+                continue;
+            }
+            /** @var string|array<string> $value */
+            $response = $response->withAddedHeader((string) $name, $value);
         }
 
         $response->getBody()->write($body);

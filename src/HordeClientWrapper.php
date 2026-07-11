@@ -34,8 +34,6 @@ use Horde_Url;
  * @package        Http
  * @property       boolean      $httpMethodOverride
  *                              @see $_httpMethodOverride
- * @property       Horde_Http_Request_Base $request
- *                              A concrete request instance.
  * @property-write string|Horde_Url $request.uri
  *                              Default URI if not specified for individual
  *                              requests.
@@ -78,30 +76,25 @@ class HordeClientWrapper implements ClientInterface
 {
     protected RequestFactoryInterface $requestFactory;
     protected StreamFactoryInterface $streamFactory;
-    /**
-     * The previous HTTP request.
-     *
-     * @var RequestInterface
-     */
-    protected $lastRequest;
 
     /**
-     * The most recent HTTP response.
-     *
-     * @var ResponseInterface
+     * The previous HTTP request, or null when no request has been sent yet.
      */
-    protected $lastResponse;
+    protected ?RequestInterface $lastRequest = null;
+
+    /**
+     * The most recent HTTP response, or null when no request has been sent yet.
+     */
+    protected ?ResponseInterface $lastResponse = null;
 
     /**
      * Use POST instead of PUT and DELETE, sending X-HTTP-Method-Override with
      * the intended method name instead.
-     *
-     * @var bool
      */
     protected bool $httpMethodOverride = false;
 
     /**
-     * A predefined uri for generated requests
+     * A predefined uri for generated requests.
      */
     public ?string $uri = null;
 
@@ -129,13 +122,13 @@ class HordeClientWrapper implements ClientInterface
     /**
      * Sends a GET request.
      *
-     * @param string $uri     Request URI.
-     * @param array $headers  Additional request headers.
+     * @param string|Uri|Horde_Url|null $uri Request URI, or null to use $this->uri.
+     * @param array<string, string|list<string>> $headers Additional request headers.
      *
      * @throws ClientException
      * @return ResponseInterface
      */
-    public function get($uri = null, $headers = [])
+    public function get($uri = null, array $headers = []): ResponseInterface
     {
         return $this->request('GET', $uri, null, $headers);
     }
@@ -143,14 +136,14 @@ class HordeClientWrapper implements ClientInterface
     /**
      * Sends a POST request.
      *
-     * @param string $uri         Request URI.
-     * @param array|string $data  Data fields or data body.
-     * @param array $headers      Additional request headers.
+     * @param string|Uri|Horde_Url|null $uri Request URI, or null to use $this->uri.
+     * @param array<string, mixed>|string|null $data Data fields or data body.
+     * @param array<string, string|list<string>> $headers Additional request headers.
      *
      * @throws Exception
      * @return ResponseInterface
      */
-    public function post($uri = null, $data = null, $headers = [])
+    public function post($uri = null, $data = null, array $headers = []): ResponseInterface
     {
         return $this->request('POST', $uri, $data, $headers);
     }
@@ -158,14 +151,14 @@ class HordeClientWrapper implements ClientInterface
     /**
      * Sends a PUT request.
      *
-     * @param string $uri     Request URI.
-     * @param string $data    Data body.
-     * @param array $headers  Additional request headers.
+     * @param string|Uri|Horde_Url|null $uri Request URI, or null to use $this->uri.
+     * @param string|null $data Data body.
+     * @param array<string, string|list<string>> $headers Additional request headers.
      *
      * @throws Exception
      * @return ResponseInterface
      */
-    public function put($uri = null, $data = null, $headers = []): ResponseInterface
+    public function put($uri = null, $data = null, array $headers = []): ResponseInterface
     {
         if ($this->httpMethodOverride) {
             $headers = array_merge(
@@ -181,13 +174,13 @@ class HordeClientWrapper implements ClientInterface
     /**
      * Sends a DELETE request.
      *
-     * @param string $uri     Request URI.
-     * @param array $headers  Additional request headers.
+     * @param string|Uri|Horde_Url|null $uri Request URI, or null to use $this->uri.
+     * @param array<string, string|list<string>> $headers Additional request headers.
      *
      * @throws Exception
      * @return ResponseInterface
      */
-    public function delete($uri = null, $headers = []): ResponseInterface
+    public function delete($uri = null, array $headers = []): ResponseInterface
     {
         if ($this->httpMethodOverride) {
             $headers = array_merge(
@@ -203,29 +196,27 @@ class HordeClientWrapper implements ClientInterface
     /**
      * Sends a HEAD request.
      *
-     * @param string $uri     Request URI.
-     * @param array $headers  Additional request headers.
+     * @param string|Uri|Horde_Url|null $uri Request URI, or null to use $this->uri.
+     * @param array<string, string|list<string>> $headers Additional request headers.
      *
      * @throws Exception
      * @return ResponseInterface
      */
-    public function head($uri = null, $headers = [])
+    public function head($uri = null, array $headers = []): ResponseInterface
     {
         return $this->request('HEAD', $uri, null, $headers);
     }
 
     /**
-     * Builds and sends a HTTP request (H5 style)
+     * Builds and sends a HTTP request (H5 style).
      *
-     * @param string $method         HTTP request method (GET, PUT, etc.)
-     * @param string|Uri|Horde_Url $uri  URI to request, if different from
-     *                               $this->uri
-     * @param string|array $data     Request data. Array of form data that will
+     * @param string $method HTTP request method (GET, PUT, etc.).
+     * @param string|Uri|Horde_Url|null $uri URI to request, if different from $this->uri.
+     * @param array<string, mixed>|string|null $data Request data. Array of form data that will
      *                               be encoded automatically, or a raw string.
-     * @param array $headers         Any headers specific to this request. They
-     *                               will be combined with $this->_headers, and
-     *                               override headers of the same name for this
-     *                               request only.
+     * @param iterable<string, string|list<string>> $headers Any headers specific to this
+     *                               request. They will be combined with $this->_headers, and
+     *                               override headers of the same name for this request only.
      *
      * @throws ClientException
      * @return ResponseInterface
@@ -235,12 +226,18 @@ class HordeClientWrapper implements ClientInterface
         $uri = null,
         $data = null,
         iterable $headers = []
-    ) {
-        if (empty($uri)) {
+    ): ResponseInterface {
+        if ($uri === null || $uri === '') {
             $uri = $this->uri;
         }
-        if (empty($uri)) {
-            // Throw exception
+        if ($uri === null || $uri === '') {
+            throw new ClientException('Cannot send a request without a URI');
+        }
+
+        // The PSR-17 factory requires string or UriInterface; coerce a
+        // Horde_Url or an Http\Uri to string so the boundary is sharp.
+        if ($uri instanceof Horde_Url) {
+            $uri = (string) $uri;
         }
 
         // Build a request

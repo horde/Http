@@ -7,24 +7,36 @@ use Horde_Support_CaseInsensitiveArray as CaseInsensitiveArray;
 trait ParseHeadersTrait
 {
     /**
-     * Catch a parsed http return code
-     *
-     * Some clients like fopen rely on this.
+     * The HTTP status code parsed from the response head. `0` before
+     * parseHeaders() runs — callers gate on the presence of a HTTP/N.M
+     * status line.
      */
-    private $parsedCode = null;
-    private $parsedHttpVersion = null;
+    private int $parsedCode = 0;
 
     /**
-     * Parse a string or array of strings into a set of headers
-     *
-     * We might move this to a trait
+     * The HTTP protocol version parsed from the response head (e.g.
+     * "1.1"). Empty string before parseHeaders() runs.
      */
-    private function parseHeaders($headers)
-    {
-        $this->parsedCode = null;
+    private string $parsedHttpVersion = '';
 
-        if (!is_array($headers)) {
-            $headers = preg_split("/\r?\n/", $headers);
+    /**
+     * Parse a string or array of strings into a set of headers.
+     *
+     * Accepts either the raw block emitted by fopen()/curl_exec() or a
+     * pre-split array of lines (as `stream_get_meta_data()['wrapper_data']`
+     * hands back). The result is a case-insensitive bag so callers can
+     * lookup headers without matching the on-wire case.
+     *
+     * @param string|list<string> $headers Header block or list of header lines.
+     * @return CaseInsensitiveArray
+     */
+    private function parseHeaders(string|array $headers): CaseInsensitiveArray
+    {
+        $this->parsedCode = 0;
+
+        if (is_string($headers)) {
+            $split = preg_split("/\r?\n/", $headers);
+            $headers = $split === false ? [] : $split;
         }
 
         $bucket = new CaseInsensitiveArray();
@@ -44,36 +56,42 @@ trait ParseHeadersTrait
             }
 
             $headerLine = trim($headerLine, "\r\n");
-            if ($headerLine == '') {
+            if ($headerLine === '') {
                 break;
             }
             if (preg_match('|^([\w-]+):\s+(.+)|', $headerLine, $m)) {
                 $headerName = $m[1];
                 $headerValue = $m[2];
 
-                if ($tmp = $bucket[$headerName]) {
-                    if (!is_array($tmp)) {
-                        $tmp = [$tmp];
+                $existing = $bucket[$headerName] ?? null;
+                if ($existing !== null && $existing !== '') {
+                    if (!is_array($existing)) {
+                        $existing = [$existing];
                     }
-                    $tmp[] = $headerValue;
-                    $headerValue = $tmp;
+                    $existing[] = $headerValue;
+                    $headerValue = $existing;
                 }
 
                 $bucket[$headerName] = $headerValue;
                 $lastHeader = $headerName;
-            } elseif (preg_match("|^\s+(.+)$|", $headerLine, $m)
-                      && !is_null($lastHeader)) {
-                if (is_array($bucket[$lastHeader])) {
-                    $tmp = $bucket[$lastHeader];
-                    end($tmp);
-                    $tmp[key($tmp)] .= $m[1];
-                    $bucket[$lastHeader] = $tmp;
+            } elseif (
+                $lastHeader !== null
+                && preg_match("|^\s+(.+)$|", $headerLine, $m)
+            ) {
+                $current = $bucket[$lastHeader] ?? '';
+                if (is_array($current)) {
+                    end($current);
+                    $key = key($current);
+                    if ($key !== null) {
+                        $existing = $current[$key];
+                        $current[$key] = (is_scalar($existing) ? (string) $existing : '') . $m[1];
+                    }
+                    $bucket[$lastHeader] = $current;
                 } else {
-                    $bucket[$lastHeader] .= $m[1];
+                    $bucket[$lastHeader] = (is_scalar($current) ? (string) $current : '') . $m[1];
                 }
             }
         }
         return $bucket;
     }
-
 }

@@ -16,25 +16,24 @@ class Response implements ResponseInterface
     use MessageImplementation;
 
     /**
-     * The HTTP Reason Phrase. May be a standard from lookup table or freeform.
-     *
-     * @var string
+     * The HTTP Reason Phrase. May be a standard from lookup table, freeform,
+     * or null when the caller did not supply one and getReasonPhrase() has
+     * not yet had to fall back to the default table.
      */
-    private $httpReasonPhrase;
+    private ?string $httpReasonPhrase;
 
     /**
      * The HTTP Status Code.
-     *
-     * @var int
      */
-    private $httpStatusCode;
+    private int $httpStatusCode;
 
 
     /**
-     *
-     * Constructor
-     *
-     *
+     * @param int $status HTTP status code.
+     * @param iterable<string, string|list<string>> $headers Response headers.
+     * @param string|resource|StreamInterface|null $body Response body.
+     * @param string $version HTTP protocol version.
+     * @param string|null $reason HTTP reason phrase override.
      */
     public function __construct(int $status = 200, iterable $headers = [], $body = null, string $version = '1.1', ?string $reason = null)
     {

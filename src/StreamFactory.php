@@ -30,8 +30,10 @@ class StreamFactory implements StreamFactoryInterface
      */
     public function createStream(string $content = ''): StreamInterface
     {
-        // TODO: catch any error conditions
         $resource = fopen('php://temp', 'rw+');
+        if ($resource === false) {
+            throw new RuntimeException('Failed to open a temp stream for createStream()');
+        }
         fwrite($resource, $content);
         return new Stream($resource);
     }
@@ -53,10 +55,11 @@ class StreamFactory implements StreamFactoryInterface
      */
     public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
     {
-        // TODO: catch any error conditions
-        $resource = fopen($filename, $mode);
+        $resource = @fopen($filename, $mode);
+        if ($resource === false) {
+            throw new RuntimeException(sprintf('Failed to open %s with mode %s', $filename, $mode));
+        }
         return new Stream($resource);
-
     }
 
     /**
